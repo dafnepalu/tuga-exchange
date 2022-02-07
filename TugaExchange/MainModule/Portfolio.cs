@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MóduloPrincipal
+namespace MainModule
 {
-    internal class Menu
+    internal class Portfolio
     {
     }
 }
