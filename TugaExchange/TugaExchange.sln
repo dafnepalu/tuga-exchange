@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainModule", "MainModule\MainModule.csproj", "{983E79A4-BEA0-46A2-85C3-7088CD6CE712}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoQuoteAPI", "CryptoQuoteAPI\CryptoQuoteAPI.csproj", "{4408A07E-A5A5-490E-8E51-0D4AFC0DB414}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainModule", "MainModule\MainModule.csproj", "{BD09CE14-E519-49A1-A3C5-FB2342F8C7C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{983E79A4-BEA0-46A2-85C3-7088CD6CE712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{983E79A4-BEA0-46A2-85C3-7088CD6CE712}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{983E79A4-BEA0-46A2-85C3-7088CD6CE712}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{983E79A4-BEA0-46A2-85C3-7088CD6CE712}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4408A07E-A5A5-490E-8E51-0D4AFC0DB414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4408A07E-A5A5-490E-8E51-0D4AFC0DB414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4408A07E-A5A5-490E-8E51-0D4AFC0DB414}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4408A07E-A5A5-490E-8E51-0D4AFC0DB414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD09CE14-E519-49A1-A3C5-FB2342F8C7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD09CE14-E519-49A1-A3C5-FB2342F8C7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD09CE14-E519-49A1-A3C5-FB2342F8C7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD09CE14-E519-49A1-A3C5-FB2342F8C7C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
