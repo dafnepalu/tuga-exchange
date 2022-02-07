@@ -12,7 +12,7 @@
         Console.WriteLine("B - Sou administrador/a");
         Console.WriteLine("\n");
 
-        isValid = Char.TryParse(Console.ReadLine(), out menuChoice);
+        isValid = char.TryParse(Console.ReadLine(), out menuChoice);
         string menuChoiceStr = menuChoice.ToString();
         string menuChoiceStrUpper = menuChoiceStr.ToUpper();
 
@@ -39,10 +39,10 @@
             InvestorMenu();
             break;
         case 'B':
-            Console.WriteLine("Você selecionou a opção B.");
+            AdminMenu();
             break;
         case 'b':
-            Console.WriteLine("Você selecionou a opção B.");
+            AdminMenu();
             break;
     }
 }
@@ -69,36 +69,102 @@ static void InvestorMenu()
         Console.WriteLine("\n");
 
         isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+        if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5 & menuChoice != 6 & menuChoice != 7)
+        {
+            Console.WriteLine("Por favor, escolha uma opção válida.");
+        }
+        else
+        {
+            Console.WriteLine($"Você escolheu a opção {menuChoice}.");
+        }
     }
-    while (menuChoice != '1' & menuChoice != '2' & menuChoice != '3' & menuChoice != '4' & menuChoice != '5' & menuChoice != '6' & menuChoice != '7');
+    while (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5 & menuChoice != 6 & menuChoice != 7);
+    
+    Console.Clear();
+
+    switch (menuChoice)
+    {
+        case 1:
+            Console.WriteLine("Você selecionou a opção 1.");
+            break;
+        case 2:
+            Console.WriteLine("Você selecionou a opção 2.");
+            break;
+        case 3:
+            Console.WriteLine("Você selecionou a opção 3.");
+            break;
+        case 4:
+            Console.WriteLine("Você selecionou a opção 4.");
+            break;
+        case 5:
+            Console.WriteLine("Você selecionou a opção 5.");
+            break;
+        case 6:
+            Console.WriteLine("Você selecionou a opção 6.");
+            break;
+        case 7:
+            Console.WriteLine("Você selecionou a opção 7.");
+            break;
+    }
+}
+
+static void AdminMenu()
+{
+    int menuChoice;
+    bool isValid;
+
+    Console.WriteLine("Bem-vindo/a, administrador/a.");
+
+    do
+    {
+        Console.WriteLine("O que deseja fazer?");
+        Console.WriteLine("\n");
+        Console.WriteLine("1 - Adicionar moeda");
+        Console.WriteLine("2 - Remover moeda");
+        Console.WriteLine("3 - Ver relatório de comissões");
+        Console.WriteLine("4 - Voltar ao menu principal");
+        Console.WriteLine("5 - Sair");
+
+        Console.WriteLine("\n");
+
+        isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+        if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5)
+        {
+            Console.WriteLine("Por favor, escolha uma opção válida.");
+        }
+        else
+        {
+            Console.WriteLine($"Você escolheu a opção {menuChoice}.");
+        }
+    }
+    while (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5);
 
     Console.Clear();
 
     switch (menuChoice)
     {
-        case '1':
+        case 1:
             Console.WriteLine("Você selecionou a opção 1.");
             break;
-        case '2':
+        case 2:
             Console.WriteLine("Você selecionou a opção 2.");
             break;
-        case '3':
+        case 3:
             Console.WriteLine("Você selecionou a opção 3.");
             break;
-        case '4':
+        case 4:
             Console.WriteLine("Você selecionou a opção 4.");
             break;
-        case '5':
+        case 5:
             Console.WriteLine("Você selecionou a opção 5.");
             break;
-        case '6':
+        case 6:
             Console.WriteLine("Você selecionou a opção 6.");
             break;
-        case '7':
+        case 7:
             Console.WriteLine("Você selecionou a opção 7.");
-            break;
-        default:
-            Console.WriteLine("Por favor, selecione uma opção válida.");
             break;
     }
 }

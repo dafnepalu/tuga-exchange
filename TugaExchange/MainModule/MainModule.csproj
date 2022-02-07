@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoQuoteAPI\CryptoQuoteAPI.csproj" />
+  </ItemGroup>
+
 </Project>

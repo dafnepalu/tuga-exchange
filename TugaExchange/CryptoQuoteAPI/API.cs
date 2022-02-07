@@ -13,20 +13,20 @@ namespace CryptoQuoteAPI
             // Permite adicionar uma nova criptomoeda no sistema da corretora;
         }
 
-        public string[] GetCoins()
-        {
-            // Devolve a lista de todas as moedas geridas pela corretora;
-        }
+        //public string[] GetCoins()
+        //{
+        //    // Devolve a lista de todas as moedas geridas pela corretora;
+        //}
 
         public void RemoveCoin(string coin)
         {
             // Retira uma determinada criptomoeda do sistema de cotações;
         }
 
-        public GetPrices(out decimal[] prices, out string[] coins)
-        {
-            // Devolve os preços atualizados de todas as moedas registadas;
-        }
+        //public GetPrices(out decimal[] prices, out string[] coins)
+        //{
+        //    // Devolve os preços atualizados de todas as moedas registadas;
+        //}
 
         public void DefinePriceUpdateInSeconds(int seconds)
         {
@@ -34,11 +34,11 @@ namespace CryptoQuoteAPI
             // o módulo atualiza a cotação das moedas;
         }
 
-        public int GetPriceUpdateInSeconds()
-        {
-            // Permite obter o intervalo de tempo (em segundos) em que
-            // o módulo calcula novos preços de cotações;
-        }
+        //public int GetPriceUpdateInSeconds()
+        //{
+        //    // Permite obter o intervalo de tempo (em segundos) em que
+        //    // o módulo calcula novos preços de cotações;
+        //}
 
         public void Save()
         {
