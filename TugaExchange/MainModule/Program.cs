@@ -47,7 +47,7 @@ static void MainMenu()
             AdminMenu();
             break;
     }
-}
+} // change this name to a verb phrase
 
 static void InvestorMenu()
 {
@@ -109,7 +109,7 @@ static void InvestorMenu()
             Console.WriteLine("Você selecionou a opção 7.");
             break;
     }
-}
+} // change this name to a verb phrase
 
 static void AdminMenu()
 {
@@ -151,9 +151,15 @@ static void AdminMenu()
             Console.WriteLine("Você está prestes a criar uma nova moeda.");
             Console.WriteLine("Qual é o nome da moeda que deseja adicionar?");
             string coin = Console.ReadLine();
-            // Criar um objeto ApiAction para chamar o método AddCoin
+            // Criar um objeto de tipo ApiAction para chamar o método AddCoin
             ApiAction addCoin = new ApiAction();
             addCoin.AddCoin(coin);
+            // Ver a lista de moedas atualizada
+            //List<string> coinList = addCoin.GetCoins();
+            //foreach (string coin_ in coinList)
+            //{
+            //    Console.WriteLine(coin_);
+            //}
             break;
         case 2:
             Console.WriteLine("Você selecionou a opção 2.");
@@ -174,7 +180,7 @@ static void AdminMenu()
             Console.WriteLine("Você selecionou a opção 7.");
             break;
     }
-}
+} // change this name to a verb phrase
 
 // Faixa de boas-vindas
 
