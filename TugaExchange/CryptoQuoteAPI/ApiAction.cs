@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace CryptoQuoteAPI
 {
-    internal class API
+    public class ApiAction
     {
         public void AddCoin(string coin)
         {
             // Permite adicionar uma nova criptomoeda no sistema da corretora;
+            // Criar um objeto Coin
+            _ = new Coin(coin);
+            Console.WriteLine($"Você adicionou a nova moeda {coin} com sucesso.");
         }
 
         //public string[] GetCoins()

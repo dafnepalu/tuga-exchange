@@ -1,4 +1,6 @@
-﻿static void MainMenu()
+﻿using CryptoQuoteAPI;
+
+static void MainMenu()
 {
     // Determina o comportamento do menu principal
     char menuChoice;
@@ -146,7 +148,12 @@ static void AdminMenu()
     switch (menuChoice)
     {
         case 1:
-            Console.WriteLine("Você selecionou a opção 1.");
+            Console.WriteLine("Você está prestes a criar uma nova moeda.");
+            Console.WriteLine("Qual é o nome da moeda que deseja adicionar?");
+            string coin = Console.ReadLine();
+            // Criar um objeto ApiAction para chamar o método AddCoin
+            ApiAction addCoin = new ApiAction();
+            addCoin.AddCoin(coin);
             break;
         case 2:
             Console.WriteLine("Você selecionou a opção 2.");
