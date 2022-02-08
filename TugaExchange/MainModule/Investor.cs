@@ -10,5 +10,11 @@ namespace MainModule
     {
         // Each investor has a portfolio containing their assets
         private Portfolio portfolio;
+
+        // Each investor needs to be able to make deposits
+        public void MakeDeposit()
+        {
+
+        }
     }
 }

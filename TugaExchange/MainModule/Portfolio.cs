@@ -8,5 +8,7 @@ namespace MainModule
 {
     internal class Portfolio
     {
+        private Investor owner;
+
     }
 }
