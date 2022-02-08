@@ -6,16 +6,27 @@
         // Private properties aren't meant to be accessed outside of the Class and need
         // to be modified using a method
 
-        private string coin;
+        private string name;
         private double marketValue;
 
         // Class methods
         // Constructor
-
-        public Coin(string coin)
+        public Coin(string name)
         {
-            this.coin = coin;
+            this.name = name;
             marketValue = 1;
+        }
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public double MarketValue
+        {
+            get { return marketValue; }
+            set { marketValue = value; }
         }
     }
 }

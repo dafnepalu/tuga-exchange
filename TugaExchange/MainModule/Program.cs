@@ -47,7 +47,12 @@ static void MainMenu()
             AdminMenu();
             break;
     }
-} // change this name to a verb phrase
+}
+
+static void Depositar()
+{
+    Console.WriteLine("Quantos euros pretende depositar?");
+}
 
 static void InvestorMenu()
 {
@@ -88,7 +93,8 @@ static void InvestorMenu()
     switch (menuChoice)
     {
         case 1:
-            Console.WriteLine("Você selecionou a opção 1.");
+            Console.WriteLine("Você está prestes a depositar dinheiro na sua carteira.");
+            Depositar();
             break;
         case 2:
             Console.WriteLine("Você selecionou a opção 2.");
@@ -103,13 +109,14 @@ static void InvestorMenu()
             Console.WriteLine("Você selecionou a opção 5.");
             break;
         case 6:
-            Console.WriteLine("Você selecionou a opção 6.");
+            MainMenu();
             break;
         case 7:
-            Console.WriteLine("Você selecionou a opção 7.");
+            Console.WriteLine("Até a próxima!");
+            // How can I close the console automatically?
             break;
     }
-} // change this name to a verb phrase
+}
 
 static void AdminMenu()
 {
@@ -151,36 +158,29 @@ static void AdminMenu()
             Console.WriteLine("Você está prestes a criar uma nova moeda.");
             Console.WriteLine("Qual é o nome da moeda que deseja adicionar?");
             string coin = Console.ReadLine();
-            // Criar um objeto de tipo ApiAction para chamar o método AddCoin
-            ApiAction addCoin = new ApiAction();
-            addCoin.AddCoin(coin);
-            // Ver a lista de moedas atualizada
-            //List<string> coinList = addCoin.GetCoins();
-            //foreach (string coin_ in coinList)
-            //{
-            //    Console.WriteLine(coin_);
-            //}
             break;
         case 2:
-            Console.WriteLine("Você selecionou a opção 2.");
+            Console.WriteLine("Você está prestes a remover uma moeda.");
+            Console.WriteLine("Selecione uma opção a partir da lista abaixo:");
+            // algo com GetCoins();
             break;
         case 3:
-            Console.WriteLine("Você selecionou a opção 3.");
+            Console.WriteLine("Carregando o relatório de comissões...");
             break;
         case 4:
-            Console.WriteLine("Você selecionou a opção 4.");
+            MainMenu();
             break;
         case 5:
-            Console.WriteLine("Você selecionou a opção 5.");
-            break;
-        case 6:
-            Console.WriteLine("Você selecionou a opção 6.");
-            break;
-        case 7:
-            Console.WriteLine("Você selecionou a opção 7.");
+            Console.WriteLine("Até a próxima!");
+            // How can I close the console automatically?
             break;
     }
-} // change this name to a verb phrase
+}
+
+static void CommissionReport()
+{
+    // Relatório de comissão
+}
 
 // Faixa de boas-vindas
 
