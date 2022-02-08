@@ -8,19 +8,29 @@ namespace CryptoQuoteAPI
 {
     public class API
     {
-        // Adicionar uma nova criptomoeda no sistema da corretora
+        // Creates a list of coins:
+        private static List<Coin> _listOfCoins = new List<Coin>();
+
+        // Adds a new coin in the system:
         public void AddCoin(string coin)
         {
-            // Criar uma moeda
+            // Creates the coin:
             Coin newCoin = new Coin(coin);
             Console.WriteLine($"Você adicionou a nova moeda {coin} com sucesso.");
+            // Adds the coin to the list of coins:
+            _listOfCoins.Add(newCoin);
         }
 
         //Devolve a lista de todas as moedas geridas pela corretora;
-        //static List<string> GetCoins()
-        //{
-
-        //}
+        public static List<string> GetCoins()
+        {
+            List<string> list = new List<string>();
+            foreach (Coin coin in _listOfCoins)
+            {
+                list.Add(coin.ToString());
+            }
+            return list;
+        }
 
         public void RemoveCoin(string coin)
         {

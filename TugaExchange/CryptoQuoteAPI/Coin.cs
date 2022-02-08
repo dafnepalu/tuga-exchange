@@ -17,6 +17,7 @@
             marketValue = 1;
         }
 
+        // Do I really need this?
         public string Name
         {
             get { return name; }
