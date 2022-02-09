@@ -3,69 +3,75 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json; // Allows us to create the methods Save() and Read() below
 
-namespace CryptoQuoteAPI
+namespace CryptoQuoteAPI;
+
+public class API
 {
-    public class API
+    // Creates a list of coins:
+    private List<Coin> _listOfCoins = new List<Coin>();
+
+    // Adds a new coin into the system and to the list of coins simultaneously:
+    public void AddCoin(string name)
     {
-        // Creates a list of coins:
-        private static List<Coin> _listOfCoins = new List<Coin>();
+        _listOfCoins.Add(new Coin(name));
+    }
 
-        // Adds a new coin in the system:
-        public void AddCoin(string coin)
+    // Returns the list of coin names in string format:
+    public List<string> GetCoins()
+    {
+        // Creates a new, updated List<string> every time the method is called:
+        List<string> listOfCoinsStr = new List<string>();
+        foreach (Coin coin in _listOfCoins)
         {
-            // Creates the coin:
-            Coin newCoin = new Coin(coin);
-            Console.WriteLine($"Você adicionou a nova moeda {coin} com sucesso.");
-            // Adds the coin to the list of coins:
-            _listOfCoins.Add(newCoin);
+            listOfCoinsStr.Add(coin.Name);
         }
+        return listOfCoinsStr;
+    }
 
-        //Devolve a lista de todas as moedas geridas pela corretora;
-        public static List<string> GetCoins()
+    // Removes a coin from the system:
+    public void RemoveCoin(string name)
+    {
+        for (int i = 0; i < _listOfCoins.Count; i++)
         {
-            List<string> list = new List<string>();
-            foreach (Coin coin in _listOfCoins)
+            Coin coin = _listOfCoins[i];
+            if (coin.Name == name)
             {
-                list.Add(coin.ToString());
+                int index = i;
+                _listOfCoins.RemoveAt(index);
             }
-            return list;
         }
+    }
 
-        public void RemoveCoin(string coin)
-        {
-            // Retira uma determinada criptomoeda do sistema de cotações;
-        }
+    //public GetPrices(out decimal[] prices, out string[] coins)
+    //{
+    //    // Devolve os preços atualizados de todas as moedas registadas;
+    //}
 
-        //public GetPrices(out decimal[] prices, out string[] coins)
-        //{
-        //    // Devolve os preços atualizados de todas as moedas registadas;
-        //}
+    public void DefinePriceUpdateInSeconds(int seconds)
+    {
+        // Permite definir o intervalo de tempo em segundos que
+        // o módulo atualiza a cotação das moedas;
+    }
 
-        public void DefinePriceUpdateInSeconds(int seconds)
-        {
-            // Permite definir o intervalo de tempo em segundos que
-            // o módulo atualiza a cotação das moedas;
-        }
+    //public int GetPriceUpdateInSeconds()
+    //{
+    //    // Permite obter o intervalo de tempo (em segundos) em que
+    //    // o módulo calcula novos preços de cotações;
+    //}
 
-        //public int GetPriceUpdateInSeconds()
-        //{
-        //    // Permite obter o intervalo de tempo (em segundos) em que
-        //    // o módulo calcula novos preços de cotações;
-        //}
+    public void Save()
+    {
+        // Permite gravar as cotações e moedas geridas, bem como a data do último câmbio;
+        // Sempre que o método GetPrices() é chamado, deve ser chamado também
+        // o método Save() para assegurar que em caso de falha do sistema,
+        // os dados tenham sido persistidos
+    }
 
-        public void Save()
-        {
-            // Permite gravar as cotações e moedas geridas, bem como a data do último câmbio;
-            // Sempre que o método GetPrices() é chamado, deve ser chamado também
-            // o método Save() para assegurar que em caso de falha do sistema,
-            // os dados tenham sido persistidos
-        }
-
-        public void Read()
-        {
-            // Permite ler as moedas, câmbio e data a que dizem respeito;
-            // Sempre que o programa é iniciado, o sistema deverá ver se o ficheiro já existe e, se sim, carregar todos os dados previamente persistidos
-        }
+    public void Read()
+    {
+        // Permite ler as moedas, câmbio e data a que dizem respeito;
+        // Sempre que o programa é iniciado, o sistema deverá ver se o ficheiro já existe e, se sim, carregar todos os dados previamente persistidos
     }
 }
