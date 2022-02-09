@@ -1,4 +1,4 @@
-﻿using CryptoQuoteAPI;
+﻿using ClassLibrary;
 
 static void MainMenu()
 {
@@ -196,12 +196,12 @@ static void AnythingElse()
                 Console.WriteLine("Qual é o nome da moeda que deseja adicionar?");
                 string coin = Console.ReadLine();
                 // Create new API instance
-                API action = new API();
-                action.AddCoin(coin);
-                foreach (string item in API.GetCoins()) // Result is weird AF
-                {
-                    Console.WriteLine(item);
-                }
+                //API action = new API();
+                //action.AddCoin(coin);
+                //foreach (string item in API.GetCoins()) // Result is weird AF
+                //{
+                //    Console.WriteLine(item);
+                //}
                 //Console.WriteLine(API.GetCoins()); doesn't quite work
                 AnythingElse();
                 break;

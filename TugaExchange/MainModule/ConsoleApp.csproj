@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CryptoQuoteAPI\CryptoQuoteAPI.csproj" />
+    <ProjectReference Include="..\CryptoQuoteAPI\ClassLibrary.csproj" />
   </ItemGroup>
 
 </Project>
