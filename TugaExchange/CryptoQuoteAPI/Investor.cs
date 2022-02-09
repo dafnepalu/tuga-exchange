@@ -1,5 +1,4 @@
-﻿using MainModule;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,18 +31,21 @@ namespace ClassLibrary
 			// Get updated values.
 			var api = new API();
 			api.GetPrices();
-
-			var finalValue = coin.MarketValue * quantity; // Is this correct?
+			// Falta um GetCoin aqui, não falta?
+			var subtotal = coin.MarketValue * quantity;
+			var fee = subtotal * (decimal)0.01;
+			var total = subtotal + fee;
 
 			// Check if the investor can afford the operation
-			if (BalanceInEuros < finalValue)
+			if (BalanceInEuros < total)
             {
                 Console.WriteLine("Você não tem saldo suficiente para realizar esta operação.");
             }
             else
             {
                 _coins.Add((coin, quantity));
-				BalanceInEuros -= finalValue;
+				BalanceInEuros -= total;
+				api.Fees.Add(fee);
             }
         }
 
@@ -57,13 +59,19 @@ namespace ClassLibrary
 			// Get updated values.
 			var api = new API();
 			api.GetPrices();
-			// Check if investor has the currency in this quantity
 
-			var finalValue = coin.MarketValue * quantity;
-			// Reimburse investor
-			BalanceInEuros += finalValue;
-			// Remove coins from _coins
-			_coins.Remove((coin, quantity));
+			if (_coins.Contains((coin, quantity)))
+            {
+				var subtotal = coin.MarketValue * quantity;
+				var fee = subtotal * (decimal)0.01;
+				BalanceInEuros += subtotal-fee;
+				_coins.Remove((coin, quantity));
+				api.Fees.Add(fee);
+			}
+            else
+            {
+                Console.WriteLine($"Você não tem um número suficiente de {coin} para efetuar esta operação.");
+            }
         }
 	}
 }

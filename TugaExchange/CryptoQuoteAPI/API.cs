@@ -12,6 +12,7 @@ public class API
 {
     public List<Coin> Coins { get; set; } = new List<Coin>();
     public List<Investor> Investors { get; set; } = new List<Investor>();
+    public List<decimal> Fees { get; set; } = new List<decimal>();
     public int PriceUpdateInSeconds { get; set; }
     private static readonly Random Random = new Random();
 
@@ -32,7 +33,6 @@ public class API
         Investors.Add(new Investor());
     }
 
-
     /// <summary>
     /// Returns the Coin list in string format.
     /// </summary>
@@ -47,6 +47,16 @@ public class API
             coinsStr.Add(coin.Name);
         }
         return coinsStr;
+    }
+
+    /// <summary>
+    /// Finds a specific coin in our Coin list based on its name.
+    /// </summary>
+    /// <param name="name">The name of the coin we want to retrieve.</param>
+    /// <returns></returns>
+    public Coin FindACoin(string name)
+    {
+        return Coins.Find(c => c.Name == name);
     }
 
     /// <summary>
@@ -102,6 +112,7 @@ public class API
     {
         return PriceUpdateInSeconds;
     }
+   
 
     /// <summary>
     /// Generates a random number between two numbers.
@@ -148,6 +159,7 @@ public class API
 
         Investors = api.Investors;
         Coins = api.Coins;
+        Fees = api.Fees;
         PriceUpdateInSeconds = api.PriceUpdateInSeconds;
     }
 }
