@@ -13,7 +13,7 @@ public class API
     public List<Coin> Coins { get; set; } = new List<Coin>();
     public List<Investor> Investors { get; set; } = new List<Investor>();
     public List<decimal> Fees { get; set; } = new List<decimal>();
-    public int PriceUpdateInSeconds { get; set; }
+    public int PriceUpdateInSeconds { get; set; } = 30;
     private static readonly Random Random = new Random();
 
     /// <summary>
@@ -26,17 +26,18 @@ public class API
     }
 
     /// <summary>
-    /// Adds a new investor to the system and to the Investor list simultaneously.
+    /// Simply returns the Coin list.
     /// </summary>
-    public void AddInvestor()
+    /// <returns></returns>
+    public List<Coin> GetCoins()
     {
-        Investors.Add(new Investor());
+        return Coins;
     }
 
     /// <summary>
     /// Returns the Coin list in string format.
     /// </summary>
-    public List<string> GetCoins()
+    public List<string> GetCoinNames()
     {
         // Creates a new, updated List<string> every time the method is called:
         List<string> coinsStr = new List<string>();
@@ -50,13 +51,21 @@ public class API
     }
 
     /// <summary>
-    /// Finds a specific coin in our Coin list based on its name.
+    /// Adds a new investor to the system and to the Investor list simultaneously.
     /// </summary>
-    /// <param name="name">The name of the coin we want to retrieve.</param>
-    /// <returns></returns>
-    public Coin FindACoin(string name)
+    public void AddInvestor()
     {
-        return Coins.Find(c => c.Name == name);
+        Investors.Add(new Investor());
+    }
+
+    /// <summary>
+    /// Finds a specific coin in our Coin list.
+    /// </summary>
+    /// <param name="name">The coin we want to retrieve.</param>
+    /// <returns>A Coin object.</returns>
+    public Coin FindCoin(string name)
+    {
+        return Coins.Find(coin => coin.Name == name);
     }
 
     /// <summary>
@@ -112,14 +121,28 @@ public class API
     {
         return PriceUpdateInSeconds;
     }
-   
+
+    /// <summary>
+    /// Shows the latest exchange rates.
+    /// </summary>
+    //public void ShowPrices()
+    //// This features a ZIP operation
+    //{
+    //    API api = new API();
+    //    (var names, var values) = api.GetPrices();
+    //    var namesAndValues = names.Zip(values, (n, v) => new { Name = n, Value = v });
+    //    foreach (var nv in namesAndValues)
+    //    {
+    //        Console.WriteLine(nv.Name + nv.Value);
+    //    }
+    //}
 
     /// <summary>
     /// Generates a random number between two numbers.
     /// </summary>
     /// <param name="minimum"></param>
     /// <param name="maximum"></param>
-    /// <returns>A random number.</returns>
+    /// <returns>Returns a random number.</returns>
 
     // This method is static because if we initialized a different random number generator (RNG) with every call
     // and the system time didn't change between calls, every RNG would get seeded with the same timestamp
@@ -129,6 +152,27 @@ public class API
     private static double GetRandomNumber(double minimum, double maximum)
     {
         return Random.NextDouble() * (maximum - minimum) + minimum;
+    }
+
+    /// <summary>
+    /// Updates currency prices and makes it seem like it has been done automatically every N seconds.
+    /// </summary>
+    /// <param name="interval">The time interval elapsed since the last time the method was called.</param>
+    public void UpdatePrices(int interval)
+    {
+        const double minimum = -0.5 / 100;
+        const double maximum = 0.5 / 100;
+
+        var times = interval / PriceUpdateInSeconds; // E.g.: 60/30 => (need to update twice)
+
+        for (var i = 0; i < times; i++)
+        {
+            foreach (var coin in Coins)
+            {
+                var variation = GetRandomNumber(minimum, maximum);
+                coin.UpdateValue(new decimal(variation));
+            }
+        }
     }
 
     /// <summary>

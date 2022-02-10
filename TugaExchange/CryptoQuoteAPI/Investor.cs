@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ClassLibrary;
 
 namespace ClassLibrary
 {
     public class Investor
     {
-		// public string Name { get; }
 		public decimal BalanceInEuros { get; set; } = 0;
-		// Unit is a decimal because investors are allowed to buy or sell fractions of a cryptocurrency.
+		// "quantity" is a decimal because investors
+		// are allowed to buy or sell fractions of a cryptocurrency.
 		private List<(Coin, decimal quantity)> _coins = new List<(Coin, decimal quantity)>();
 
 		/// <summary>
 		/// Allows an investor to make a deposit into their own account.
 		/// </summary>
-		public void MakeDeposit(decimal euros)
+		public void MakeDeposit(decimal euro)
 		{
-			BalanceInEuros += euros;
+			BalanceInEuros += euro;
 		}
 
 		/// <summary>
@@ -28,10 +29,6 @@ namespace ClassLibrary
 		/// <param name="quantity">The number of coins to be purchased.</param>
 		public void BuyCurrency(Coin coin, int quantity)
         {
-			// Get updated values.
-			var api = new API();
-			api.GetPrices();
-			// Falta um GetCoin aqui, não falta?
 			var subtotal = coin.MarketValue * quantity;
 			var fee = subtotal * (decimal)0.01;
 			var total = subtotal + fee;
@@ -45,6 +42,7 @@ namespace ClassLibrary
             {
                 _coins.Add((coin, quantity));
 				BalanceInEuros -= total;
+				var api = new API();
 				api.Fees.Add(fee);
             }
         }
