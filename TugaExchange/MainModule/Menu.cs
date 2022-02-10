@@ -91,6 +91,7 @@ namespace ConsoleApp
 
                 if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5 & menuChoice != 6 & menuChoice != 7)
                 {
+                    Console.Clear();
                     Console.WriteLine("Por favor, escolha uma opção válida.");
                 }
                 else
@@ -149,8 +150,8 @@ namespace ConsoleApp
                     break;
                 case 5:
                     Console.WriteLine("Mostrando o câmbio:");
-                    var api = new API();
-                    api.ShowRates();
+                    //var api = new API();
+                    //api.ShowRates();
                     OpenAnythingElseMenu();
                     break;
                 case 6:
@@ -189,6 +190,7 @@ namespace ConsoleApp
 
                 if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3 & menuChoice != 4 & menuChoice != 5)
                 {
+                    Console.Clear();
                     Console.WriteLine("Por favor, escolha uma opção válida.");
                 }
                 else

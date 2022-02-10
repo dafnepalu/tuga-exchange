@@ -4,7 +4,7 @@ using Xunit;
 namespace ClassLibraryTest
 {
     public class API_Tests
-    {      
+    {
         [Fact]
         public void GetCoins()
         {
@@ -26,7 +26,7 @@ namespace ClassLibraryTest
         {
             var api = new API();
             api.AddCoin("Moeda1");
-            api.FindCoin("Moeda1");
+            api.GetCoin("Moeda1");
             // How can I test if FindCoin found my coin?
         }
 
@@ -82,23 +82,22 @@ namespace ClassLibraryTest
             api.UpdatePrices(200);
             Assert.True(coin.MarketValue != 1);
         }
-    }
-    public class Investor_Tests
-    {
-        [Fact]
-        public void MakeDeposit()
-        {
-            var investor = new Investor();
-            Assert.Equal(0, investor.BalanceInEuros);
-            investor.MakeDeposit(100);
-            Assert.NotEqual(0, investor.BalanceInEuros);
-            Assert.Equal(100, investor.BalanceInEuros);
-        }
 
         [Fact]
-        public void BuyCurrency()
+        public void Transactions()
         {
-
+            var api = new API();
+            var investor = api.AddInvestor();
+            api.MakeDeposit(investor.Id, 100);
+            api.AddCoin("Coin1");
+            api.BuyCurrency(investor.Id, "Coin1", 50);
+            Assert.Equal((decimal)0.5, api.Profit);
+            Assert.Equal((decimal)50, investor.Portfolio.Coins["Coin1"]);
+            Assert.Equal((decimal)49.5, investor.BalanceInEuros);
+            api.SellCurrency(investor.Id, "Coin1", 50);
+            Assert.Equal((decimal)1, api.Profit);
+            Assert.Equal((decimal)0, investor.Portfolio.Coins["Coin1"]);
+            Assert.Equal((decimal)99, investor.BalanceInEuros);
         }
     }
 }

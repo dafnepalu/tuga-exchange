@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using ClassLibrary;
+using System.Runtime.Serialization;
 
 namespace ClassLibrary;
 
@@ -12,9 +13,11 @@ public class API
 {
     public List<Coin> Coins { get; set; } = new List<Coin>();
     public List<Investor> Investors { get; set; } = new List<Investor>();
-    public List<decimal> Fees { get; set; } = new List<decimal>();
+    public decimal Profit { get; set; }
     public int PriceUpdateInSeconds { get; set; } = 30;
     private static readonly Random Random = new Random();
+    public int LastInvestorID { get; set; }
+    public decimal TransactionFee { get; set; } = new decimal(0.01);
 
     /// <summary>
     /// Adds a new coin to the system and to the Coin list simultaneously.
@@ -53,9 +56,13 @@ public class API
     /// <summary>
     /// Adds a new investor to the system and to the Investor list simultaneously.
     /// </summary>
-    public void AddInvestor()
+    public Investor AddInvestor()
     {
-        Investors.Add(new Investor());
+        Investor investor = new Investor(); // { Id = LastInvestorID++};
+        investor.Id = LastInvestorID;
+        LastInvestorID += 1;
+        Investors.Add(investor);
+        return investor;
     }
 
     /// <summary>
@@ -63,9 +70,24 @@ public class API
     /// </summary>
     /// <param name="name">The coin we want to retrieve.</param>
     /// <returns>A Coin object.</returns>
-    public Coin FindCoin(string name)
+    public Coin GetCoin(string name)
     {
-        return Coins.Find(coin => coin.Name == name);
+        var coin = Coins.Find(coin => coin.Name == name);
+        if (coin == null)
+        {
+            throw new CoinNotFoundException();
+        }
+        return coin;
+    }
+
+    public Investor GetInvestor(int investorID)
+    {
+        var investor = Investors.Find(investor => investor.Id == investorID);
+        if (investor == null)
+        {
+            throw new InvestorNotFoundException();
+        }
+        return investor;
     }
 
     /// <summary>
@@ -92,8 +114,9 @@ public class API
     /// <summary>
     /// Returns the updated prices of all the registered coins.
     /// </summary>
-    public (List<string>, List<decimal>) GetPrices()
+    public (List<string> Names, List<decimal> Values) GetPrices()
     {
+        // Call UpdatePrices() here?
         List<string> names = new List<string>();
         List<decimal> values = new List<decimal>();
         foreach (Coin coin in Coins)
@@ -176,6 +199,57 @@ public class API
     }
 
     /// <summary>
+    /// Allows an investor to make a deposit into their own account.
+    /// </summary>
+    public void MakeDeposit(int investorID, decimal euro)
+    {
+        var investor = GetInvestor(investorID);
+        investor.BalanceInEuros += euro;
+    }
+
+    /// <summary>
+    /// Allows an investor to buy cryptocurrency using their balance in EUR.
+    /// </summary>
+    /// <param name="name">The name of the coin to be purchased.</param>
+    /// <param name="quantity">The number of coins to be purchased.</param>
+    public void BuyCurrency(int investorID, string name, int quantity)
+    {
+        var coin = GetCoin(name);
+        var subtotal = coin.MarketValue * quantity;
+        var fee = subtotal * TransactionFee;
+        var total = subtotal + fee;
+
+        var investor = GetInvestor(investorID);
+
+        // Check if the investor can afford the operation
+        if (investor.BalanceInEuros < total)
+        {
+            throw new InsufficientFundsException();
+        }
+        investor.Portfolio.AddCoin(name, quantity);
+        investor.BalanceInEuros -= total;
+        Profit += fee;
+    }
+
+    /// <summary>
+    /// Allows an investor to sell cryptocurrency they own.
+    /// </summary>
+    /// <param name="coin">The coin they want to sell.</param>
+    /// <param name="quantity">The number of coins they want to sell.</param>
+    public void SellCurrency(int investorID, string name, int quantity)
+    {
+        var coin = GetCoin(name);
+        var subtotal = coin.MarketValue * quantity;
+        var fee = subtotal * TransactionFee;
+        var total = subtotal - fee;
+
+        var investor = GetInvestor(investorID);
+        investor.Portfolio.RemoveCoin(name, quantity);
+        investor.BalanceInEuros += total;
+        Profit += fee;
+    }
+
+    /// <summary>
     /// Saves the managed quotes and currencies, as well as the date of the last exchange.
     /// </summary>
     public void Save()
@@ -192,7 +266,7 @@ public class API
         var path = "save.json";
         // Don't do anything if the file doesn't exist.
         if (!File.Exists(path))
-            return; 
+            return;
 
         var json = File.ReadAllText(path);
         var api = JsonSerializer.Deserialize<API>(json);
@@ -203,7 +277,8 @@ public class API
 
         Investors = api.Investors;
         Coins = api.Coins;
-        Fees = api.Fees;
+        Profit = api.Profit;
         PriceUpdateInSeconds = api.PriceUpdateInSeconds;
     }
 }
+
