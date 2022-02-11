@@ -292,9 +292,23 @@ namespace Program
 
         static void Main()
         {
+            ///<summary>Creates a new API object and attributes it to Program's api property.</summary>
             var api = new API();
-            Console.WriteLine("hello bitch");
+            Program.api = api;
+
+            ///<summary>Reads previously saved data.</summary>
+            api.Read();
+
+            ShowWelcomeBanner();
+
+
+
+
             OpenAdminMenu();
+
+            Console.WriteLine("Salvando os dados...");
+            api.Save();
+            Console.WriteLine("Salvei (supostamente).");
         }
     
     }

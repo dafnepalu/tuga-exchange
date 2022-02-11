@@ -6,12 +6,11 @@ namespace ConsoleAppTest
     public class UnitTest1
     {
         [Fact]
-        public void Deposit()
+        public void ReadSave()
         {
             var api = new API();
-            api.AddCoin("moeda1");
-            api.AddCoin("moeda2");
             
+
         }
     }
 }

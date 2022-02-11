@@ -1,4 +1,6 @@
 using ClassLibrary;
+using System;
+using System.Threading;
 using Xunit;
 
 namespace ClassLibraryTest
@@ -79,7 +81,7 @@ namespace ClassLibraryTest
             var coins = api.GetCoins();
             var coin = coins[0];
             Assert.True(coin.MarketValue == 1);
-            api.UpdatePrices(200);
+            //api.UpdatePrices(200);
             Assert.True(coin.MarketValue != 1);
         }
 
@@ -121,6 +123,19 @@ namespace ClassLibraryTest
             Assert.NotEmpty(api.Investors);
             Assert.NotEmpty(investor.Portfolio.Coins);
             Assert.NotEqual(0, api.Profit);
+        }
+        [Fact]
+        public void Json2()
+        {
+            var api = new API();
+            api.AddCoin("coinhehe");
+            api.UpdatePrices();
+            DateTime firstTime = api.LastTimeUpdatePricesWasCalled;
+            api.Save();
+            TimeSpan ts = new TimeSpan(0, 2, 0);
+            Thread.Sleep(ts);
+            api.UpdatePrices();
+            Assert.NotEqual(firstTime, api.LastTimeUpdatePricesWasCalled);
         }
     }
 }

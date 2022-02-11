@@ -18,6 +18,7 @@ public class API
     private static readonly Random Random = new Random();
     public int LastInvestorID { get; set; }
     public decimal TransactionFee { get; set; } = new decimal(0.01);
+    public DateTime LastTimeUpdatePricesWasCalled { get; set; }
 
     /// <summary>
     /// Adds a new coin to the system and to the Coin list simultaneously.
@@ -180,10 +181,16 @@ public class API
     /// Updates currency prices and makes it seem like it has been done automatically every N seconds.
     /// </summary>
     /// <param name="interval">The time interval elapsed since the last time the method was called.</param>
-    public void UpdatePrices(int interval)
+    public void UpdatePrices()
     {
         const double minimum = -0.5 / 100;
         const double maximum = 0.5 / 100;
+
+        if (LastTimeUpdatePricesWasCalled == default(DateTime))
+        {
+            LastTimeUpdatePricesWasCalled = DateTime.Now;
+        }
+        double interval = DateTime.Now.Subtract(LastTimeUpdatePricesWasCalled).TotalSeconds;
 
         var times = interval / PriceUpdateInSeconds; // E.g.: 60/30 => (need to update twice)
 
@@ -195,6 +202,7 @@ public class API
                 coin.UpdateValue(new decimal(variation));
             }
         }
+        LastTimeUpdatePricesWasCalled = DateTime.Now;
     }
 
     /// <summary>
@@ -278,6 +286,7 @@ public class API
         Coins = api.Coins;
         Profit = api.Profit;
         PriceUpdateInSeconds = api.PriceUpdateInSeconds;
+        LastTimeUpdatePricesWasCalled = api.LastTimeUpdatePricesWasCalled;
     }
 }
 
