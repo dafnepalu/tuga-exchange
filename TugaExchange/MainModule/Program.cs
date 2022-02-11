@@ -135,37 +135,148 @@ namespace Program
                             Console.Clear();
                             Console.WriteLine("Tem certeza de que introduziu uma opção válida?");
                         }
-                    }
-                    while (!amountIsValid);
-
-                    if (amountIsValid)
-                    {
-                        if (amount <= 0)
+                        if (amountIsValid)
                         {
-                            Console.WriteLine("Por favor, escolha um valor maior do que zero da próxima vez.");
-                            Console.WriteLine("\n");
-                            Thread.Sleep(3000);
-                            Console.Clear();
-                            OpenInvestorMenu();
+                            if (amount <= 0)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um valor maior do que zero.");
+                                amountIsValid = false;
+                            }
+                            else
+                            {
+                                api.MakeDeposit(investor.Id, amount);
+                                Console.WriteLine($"Você depositou {amount} EUR na sua carteira.");
+                            }
                         }
                         else
                         {
-                            api.MakeDeposit(investor.Id, amount);
-                            Console.WriteLine($"Você depositou {amount} EUR na sua carteira.");
+                            Console.WriteLine("Por favor, introduza uma opção válida da próxima vez.");
+                            OpenInvestorMenu();
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("Por favor, introduza uma opção válida da próxima vez.");
-                        OpenInvestorMenu();
-                    }
-                    api.Save();
+                    while (!amountIsValid);
+
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
+                    OpenAnythingElseMenu();
                     break;
                 case 2:
-                    Console.WriteLine("Você selecionou a opção 2.");
+                    Console.WriteLine("Você está prestes a comprar criptomoeda.");
+                    var list = api.GetCoinNames();
+                    decimal quantity;
+
+                    do
+                    {
+                        Console.WriteLine("Selecione a moeda que deseja comprar:");
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1} - {list[i]}");
+                        }
+                        Console.WriteLine("\n");
+                        isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+                        if (!isValid)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Por favor, introduza um número da lista.");
+                        }
+                        else
+                        {
+                            if (menuChoice > list.Count)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
+                            if (menuChoice <= 0)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
+                        }
+                    }
+                    while (!isValid);
+                    int index = menuChoice - 1;
+                    string coinToPurchase = list[index];
+
+                    do
+                    {
+                        Console.WriteLine("Quantas moedas deseja comprar?");
+                        isValid = Decimal.TryParse(Console.ReadLine(), out quantity);
+
+                        if (!isValid)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Por favor, introduza um número inteiro (1, 2...) ou decimal (1,5, 3,5...).");
+                        }
+                        else
+                        {
+                            if (quantity <= 0)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número maior do que zero.");
+                                isValid = false;
+                            }
+                        }
+                    }
+                    while (!isValid);
+
+                    try
+                    {
+                        api.BuyCurrency(investor.Id, coinToPurchase, quantity);
+                    }
+                    catch (InsufficientFundsException e)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"{e.Message}");
+                        PressKeyToContinue();
+                    }
+                    Console.Clear();
+                    Console.WriteLine($"{quantity} unidade/s da criptomoeda {coinToPurchase} foi/foram adicionada/s ao seu portfolio.");
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
+                    OpenAnythingElseMenu();
                     break;
                 case 3:
-                    Console.WriteLine("Você selecionou a opção 3.");
+                    var dictionary = investor.Portfolio.Coins;
+                    Console.WriteLine("Você está prestes a vender criptomoeda.");
+                    do
+                    {
+                        Console.WriteLine("Selecione a moeda que deseja vender:");
+                        for (int i = 0; i < dictionary.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1} - {dictionary.Values}");
+                        }
+
+                        Console.WriteLine("\n");
+                        isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+                        if (!isValid)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Por favor, introduza um número da lista.");
+                        }
+                        else
+                        {
+                            if (menuChoice > dictionary.Count)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
+                            if (menuChoice <= 0)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
+                        }
+                    }
+                    while (!isValid);                   
                     break;
                 case 4:
                     Console.WriteLine("Você selecionou a opção 4.");
@@ -177,11 +288,12 @@ namespace Program
                     OpenAnythingElseMenu();
                     break;
                 case 6:
+                    Console.Clear();
                     OpenMainMenu();
                     break;
                 case 7:
+                    Console.Clear();
                     Console.WriteLine("Até a próxima!");
-                    // How can I close the console automatically?
                     break;
             }
         }
@@ -292,14 +404,19 @@ namespace Program
                     OpenAnythingElseMenu();
                     break;
                 case 3:
-                    Console.WriteLine("Carregando o relatório de comissões...");
+                    Console.WriteLine($"Até o momento, a TugaExchange registou um lucro de {api.Profit} EUR.");
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
+                    OpenAnythingElseMenu();
                     break;
                 case 4:
+                    Console.Clear();
                     OpenMainMenu();
                     break;
                 case 5:
+                    Console.Clear();
                     Console.WriteLine("Até a próxima!");
-                    // How can I close the console automatically?
                     break;
             }
         }

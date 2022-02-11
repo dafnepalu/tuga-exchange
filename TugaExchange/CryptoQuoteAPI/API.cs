@@ -76,7 +76,7 @@ public class API
         var coin = Coins.Find(coin => coin.Name == name);
         if (coin == null)
         {
-            throw new CoinNotFoundException();
+            throw new CoinNotFoundException("Esta criptomoeda não se encontra no seu portfolio.");
         }
         return coin;
     }
@@ -219,7 +219,7 @@ public class API
     /// </summary>
     /// <param name="name">The name of the coin to be purchased.</param>
     /// <param name="quantity">The number of coins to be purchased.</param>
-    public void BuyCurrency(int investorID, string name, int quantity)
+    public void BuyCurrency(int investorID, string name, decimal quantity)
     {
         var coin = GetCoin(name);
         var subtotal = coin.MarketValue * quantity;
@@ -231,7 +231,7 @@ public class API
         // Check if the investor can afford the operation
         if (investor.BalanceInEuros < total)
         {
-            throw new InsufficientFundsException();
+            throw new InsufficientFundsException("Você não tem saldo suficiente para realizar esta operação.");
         }
         investor.Portfolio.AddCoinToPortfolio(name, quantity);
         investor.BalanceInEuros -= total;
@@ -243,7 +243,7 @@ public class API
     /// </summary>
     /// <param name="coin">The coin they want to sell.</param>
     /// <param name="quantity">The number of coins they want to sell.</param>
-    public void SellCurrency(int investorID, string name, int quantity)
+    public void SellCurrency(int investorID, string name, decimal quantity)
     {
         var coin = GetCoin(name);
         var subtotal = coin.MarketValue * quantity;

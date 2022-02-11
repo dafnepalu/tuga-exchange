@@ -3,7 +3,7 @@
 public class Portfolio
 {
     public Dictionary<string, decimal> Coins { get; set; } = new Dictionary<string, decimal>();
-    public void AddCoinToPortfolio(string name, int quantity)
+    public void AddCoinToPortfolio(string name, decimal quantity)
     {
         if (quantity <= 0)
         {
@@ -19,7 +19,7 @@ public class Portfolio
         }
     }
 
-    public void RemoveCoinFromPortfolio(string name, int quantity)
+    public void RemoveCoinFromPortfolio(string name, decimal quantity)
     {
         if (!Coins.ContainsKey(name)) // je vérifie que la clé existe sinon erreur
         {
