@@ -6,9 +6,6 @@ namespace Program
     {
         static API api = new API();
 
-        /// <summary>
-        /// Shows the welcome banner.
-        /// </summary>
         static void ShowWelcomeBanner()
         {
             string welcomeText = "TugaExchange - Cripto com confiança";
@@ -28,6 +25,12 @@ namespace Program
                 Console.Write("* ");
             }
             Console.WriteLine("\n");
+        }
+
+        static void PressKeyToContinue()
+        {
+            Console.WriteLine("Pressione qualquer tecla para continuar.");
+            Console.ReadKey();
         }
 
         static void OpenMainMenu()
@@ -83,8 +86,9 @@ namespace Program
         {
             int menuChoice;
             bool isValid;
+            var investor = api.AddInvestor();
 
-            Console.WriteLine("Bem-vindo/a, investidor/a.");
+            Console.WriteLine($"Bem-vindo/a, investidor/a #{investor.Id}.");
 
             do
             {
@@ -128,6 +132,7 @@ namespace Program
                         amountIsValid = Decimal.TryParse(Console.ReadLine(), out amount);
                         if (!amountIsValid)
                         {
+                            Console.Clear();
                             Console.WriteLine("Tem certeza de que introduziu uma opção válida?");
                         }
                     }
@@ -138,11 +143,14 @@ namespace Program
                         if (amount <= 0)
                         {
                             Console.WriteLine("Por favor, escolha um valor maior do que zero da próxima vez.");
+                            Console.WriteLine("\n");
+                            Thread.Sleep(3000);
+                            Console.Clear();
                             OpenInvestorMenu();
                         }
                         else
                         {
-                            //investor.MakeDeposit(amount);
+                            api.MakeDeposit(investor.Id, amount);
                             Console.WriteLine($"Você depositou {amount} EUR na sua carteira.");
                         }
                     }
@@ -151,6 +159,7 @@ namespace Program
                         Console.WriteLine("Por favor, introduza uma opção válida da próxima vez.");
                         OpenInvestorMenu();
                     }
+                    api.Save();
                     break;
                 case 2:
                     Console.WriteLine("Você selecionou a opção 2.");
@@ -228,17 +237,59 @@ namespace Program
                     else
                     {
                         api.AddCoin(coinName);
+                        Console.WriteLine($"Você introduziu a moeda {coinName} com sucesso. Esta é a lista atualizada de criptomoedas da TugaExchange:");
                         foreach (string coin in api.GetCoinNames())
                         {
                             Console.WriteLine(coin);
                         }
                     }
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
                     OpenAnythingElseMenu();
                     break;
                 case 2:
                     Console.WriteLine("Você está prestes a remover uma moeda.");
-                    Console.WriteLine("Selecione uma opção a partir da lista abaixo:");
-                    // algo com GetCoins();
+                    var list = api.GetCoinNames();
+                    do
+                    {
+                        Console.WriteLine("Selecione uma opção a partir da lista abaixo:");
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1} - {list[i]}");
+                        }
+                        Console.WriteLine("\n");
+                        isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+                        if (!isValid)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Por favor, introduza um número da lista.");
+                        }
+                        else
+                        {
+                            if (menuChoice > list.Count)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
+                        }
+                    }
+                    while (!isValid);
+                    int index = menuChoice - 1;
+                    string coinToRemove = list[index];
+                    api.RemoveCoin(coinToRemove);
+                    Console.Clear();
+                    Console.WriteLine($"A criptomoeda {coinToRemove} foi removida do sistema. Esta é a lista atualizada de criptomoedas da TugaExchange:");
+                    foreach (string coin in api.GetCoinNames())
+                    {
+                        Console.WriteLine(coin);
+                    }
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
+                    OpenAnythingElseMenu();
                     break;
                 case 3:
                     Console.WriteLine("Carregando o relatório de comissões...");
@@ -272,16 +323,13 @@ namespace Program
                 {
                     Console.WriteLine("Por favor, escolha uma opção válida.");
                 }
-                else
-                {
-                    Console.WriteLine($"Você escolheu a opção {menuChoice}.");
-                }
             }
             while (menuChoice != 1 & menuChoice != 2);
 
             switch (menuChoice)
             {
                 case 1:
+                    Console.Clear();
                     OpenMainMenu();
                     break;
                 case 2:
@@ -301,15 +349,11 @@ namespace Program
 
             ShowWelcomeBanner();
 
+            OpenMainMenu();
 
-
-
-            OpenAdminMenu();
-
-            Console.WriteLine("Salvando os dados...");
+            ///<summary>Saves this session's data.</summary>
             api.Save();
-            Console.WriteLine("Salvei (supostamente).");
         }
-    
+
     }
 }
