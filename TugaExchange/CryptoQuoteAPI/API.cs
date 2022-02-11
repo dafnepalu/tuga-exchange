@@ -58,7 +58,7 @@ public class API
     /// </summary>
     public Investor AddInvestor()
     {
-        Investor investor = new Investor(); // { Id = LastInvestorID++};
+        Investor investor = new Investor();
         investor.Id = LastInvestorID;
         LastInvestorID += 1;
         Investors.Add(investor);
@@ -116,7 +116,6 @@ public class API
     /// </summary>
     public (List<string> Names, List<decimal> Values) GetPrices()
     {
-        // Call UpdatePrices() here?
         List<string> names = new List<string>();
         List<decimal> values = new List<decimal>();
         foreach (Coin coin in Coins)
@@ -226,7 +225,7 @@ public class API
         {
             throw new InsufficientFundsException();
         }
-        investor.Portfolio.AddCoin(name, quantity);
+        investor.Portfolio.AddCoinToPortfolio(name, quantity);
         investor.BalanceInEuros -= total;
         Profit += fee;
     }
@@ -244,7 +243,7 @@ public class API
         var total = subtotal - fee;
 
         var investor = GetInvestor(investorID);
-        investor.Portfolio.RemoveCoin(name, quantity);
+        investor.Portfolio.RemoveCoinFromPortfolio(name, quantity);
         investor.BalanceInEuros += total;
         Profit += fee;
     }

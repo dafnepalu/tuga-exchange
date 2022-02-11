@@ -99,5 +99,28 @@ namespace ClassLibraryTest
             Assert.Equal((decimal)0, investor.Portfolio.Coins["Coin1"]);
             Assert.Equal((decimal)99, investor.BalanceInEuros);
         }
+
+        [Fact]
+        public void Json()
+        {
+            var api = new API();
+            Assert.Empty(api.Investors);
+            var investor = api.AddInvestor();
+            Assert.NotEmpty(api.Investors);
+            Assert.Equal(0, investor.BalanceInEuros);
+            api.MakeDeposit(investor.Id, 100);
+            Assert.Equal(100, investor.BalanceInEuros);
+            api.AddCoin("Coin1");
+            Assert.Empty(investor.Portfolio.Coins);
+            api.BuyCurrency(investor.Id, "Coin1", 50);
+            Assert.NotEmpty(investor.Portfolio.Coins);
+            Assert.NotEqual(0, api.Profit);         
+            api.Save();
+
+            api.Read();
+            Assert.NotEmpty(api.Investors);
+            Assert.NotEmpty(investor.Portfolio.Coins);
+            Assert.NotEqual(0, api.Profit);
+        }
     }
 }
