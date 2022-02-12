@@ -12,6 +12,6 @@ public class Coin
 
     public void UpdateValue(decimal variation)
     {
-        MarketValue = variation / new decimal(100.0) * MarketValue + MarketValue;
+        MarketValue = variation * MarketValue + MarketValue;
     }
 }

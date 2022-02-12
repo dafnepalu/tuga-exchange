@@ -33,7 +33,7 @@ public class Portfolio
         var value = Coins[name]; // j'accède à la valeur grâce à la clé name
         if (value < quantity)
         {
-            throw new InsufficientCoinsException();
+            throw new InsufficientCoinsException($"Você não possui uma quantidade suficiente desta criptomoeda.");
         }
         Coins[name] -= quantity; // je modifie la valeur grâce à la clé name
     }

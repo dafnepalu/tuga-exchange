@@ -101,7 +101,7 @@ public class API
         var investor = Investors.Find(investor => investor.Id == investorID);
         if (investor == null)
         {
-            throw new InvestorNotFoundException();
+            throw new InvestorNotFoundException("O ID de investidor não foi encontrado.");
         }
         return investor;
     }
@@ -132,6 +132,7 @@ public class API
     /// </summary>
     public (List<string> Names, List<decimal> Values) GetPrices()
     {
+        //UpdatePrices();
         List<string> names = new List<string>();
         List<decimal> values = new List<decimal>();
         foreach (Coin coin in Coins)
@@ -201,15 +202,15 @@ public class API
         const double minimum = -0.5 / 100;
         const double maximum = 0.5 / 100;
 
-        if (LastTimeUpdatePricesWasCalled == default(DateTime))
+        if (LastTimeUpdatePricesWasCalled == null)
         {
             LastTimeUpdatePricesWasCalled = DateTime.Now;
         }
         double interval = DateTime.Now.Subtract(LastTimeUpdatePricesWasCalled).TotalSeconds;
 
-        var times = interval / PriceUpdateInSeconds; // E.g.: 60/30 => (need to update twice)
+        var times = Math.Floor(interval / PriceUpdateInSeconds); // rounds down everytime
 
-        for (var i = 0; i < times; i++)
+        for (var i = 0; i < times; i++) // If 15 seconds elapsed and defined interval was 30 => times = 0.5. i = 0 is smaller than 0.5, it will execute it once although I don't want that because not enough time has elapsed
         {
             foreach (var coin in Coins)
             {
@@ -218,6 +219,7 @@ public class API
             }
         }
         LastTimeUpdatePricesWasCalled = DateTime.Now;
+        Save();
     }
 
     /// <summary>

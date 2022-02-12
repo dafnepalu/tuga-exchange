@@ -7,7 +7,7 @@ namespace Program
     {
         static API api = new API();
 
-        static Investor investor;
+        static Investor? currentInvestor;
 
         static void ShowWelcomeBanner()
         {
@@ -32,6 +32,7 @@ namespace Program
 
         static void PressKeyToContinue()
         {
+            Console.WriteLine("\n");
             Console.WriteLine("Pressione qualquer tecla para continuar.");
             Console.ReadKey();
         }
@@ -69,7 +70,56 @@ namespace Program
             switch (menuChoice)
             {
                 case 1:
-                    OpenInvestorMenu();
+                    if (api.Investors == null)
+                    {
+                        currentInvestor = api.AddInvestor();
+                        Console.WriteLine($"Bem-vindo/a, investidor/a #{currentInvestor.Id}.");
+                        OpenInvestorMenu();
+                    }
+                    else
+                    {
+                        do
+                        {
+                            Console.WriteLine("Qual é o seu ID de investidor?");
+                            isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+                            if (!isValid)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, insira um número.");
+                            }
+                            else
+                            {
+                                if (menuChoice < 0)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("Por favor, insira um número igual ou maior do que zero.");
+                                    isValid = false;
+                                }
+                                else if (menuChoice > api.Investors.Count)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("O ID está incorreto. Por favor, tente novamente.");
+                                    isValid = false;
+                                }
+                            }
+                        }
+                        while (!isValid);
+
+                        try
+                        {
+                            currentInvestor = api.GetInvestor(menuChoice);
+                        }
+                        catch (InvestorNotFoundException e)
+                        {
+                            Console.Clear();
+                            Console.WriteLine($"{e.Message}");
+                            PressKeyToContinue();
+                        }
+                        Console.Clear();
+                        Console.WriteLine($"Bem-vindo/a, investidor/a #{currentInvestor.Id}.");
+                        OpenInvestorMenu();
+                    }
                     break;
                 case 2:
                     OpenAdminMenu();
@@ -81,13 +131,10 @@ namespace Program
         {
             int menuChoice;
             bool isValid;
-            //var investor = api.AddInvestor();
-            //Program.investor = investor;
-
-            Console.WriteLine($"Bem-vindo/a, investidor/a #{investor.Id}.");
 
             do
             {
+                Console.WriteLine($"Sessão do investidor #{currentInvestor.Id}");
                 Console.WriteLine("O que deseja fazer?");
                 Console.WriteLine("\n");
                 Console.WriteLine("1 - Depositar EUR");
@@ -95,7 +142,7 @@ namespace Program
                 Console.WriteLine("3 - Vender moeda");
                 Console.WriteLine("4 - Mostrar portfolio");
                 Console.WriteLine("5 - Mostrar câmbio");
-                Console.WriteLine("6 - Voltar ao menu principal");
+                Console.WriteLine("6 - Fechar a sessão atual e voltar ao menu principal");
                 Console.WriteLine("7 - Sair");
 
                 Console.WriteLine("\n");
@@ -141,7 +188,7 @@ namespace Program
                             }
                             else
                             {
-                                api.MakeDeposit(investor.Id, amount);
+                                api.MakeDeposit(currentInvestor.Id, amount);
                                 Console.WriteLine($"Você depositou {amount} EUR na sua carteira.");
                             }
                         }
@@ -152,11 +199,7 @@ namespace Program
                         }
                     }
                     while (!amountIsValid);
-
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseInvestorMenu();
                     break;
                 case 2:
                     Console.WriteLine("Você está prestes a comprar criptomoeda.");
@@ -222,7 +265,7 @@ namespace Program
 
                     try
                     {
-                        api.BuyCurrency(investor.Id, coinToPurchase, quantity);
+                        api.BuyCurrency(currentInvestor.Id, coinToPurchase, quantity);
                     }
                     catch (InsufficientFundsException e)
                     {
@@ -232,21 +275,15 @@ namespace Program
                     }
                     Console.Clear();
                     Console.WriteLine($"Você comprou {quantity} unidade/s da criptomoeda {coinToPurchase}.");
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseInvestorMenu();
                     break;
                 case 3:
-                    var dictionary = investor.Portfolio.Coins;
+                    var dictionary = currentInvestor.Portfolio.Coins;
                     //dictionary.Add("Moeda1", 3);
                     if (dictionary.Count == 0)
                     {
                         Console.WriteLine("Você ainda não possui criptomoeda.");
-                        Console.WriteLine("\n");
-                        PressKeyToContinue();
-                        Console.Clear();
-                        OpenAnythingElseMenu();
+                        CloseInvestorMenu();
                     }
                     else
                     {
@@ -313,36 +350,36 @@ namespace Program
                             }
                         }
                         while (!isValid);
-                        api.SellCurrency(investor.Id, coinToSell, quantity);
+                        try
+                        {
+                            api.SellCurrency(currentInvestor.Id, coinToSell, quantity);
+                        }
+                        catch (InsufficientCoinsException e)
+                        {
+                            Console.Clear();
+                            Console.WriteLine($"{e.Message}");
+                            CloseInvestorMenu();
+                        }
                         Console.Clear();
                         Console.WriteLine($"Você vendeu {quantity} unidade/s da criptomoeda {coinToSell}.");
-                        Console.WriteLine("\n");
-                        PressKeyToContinue();
-                        Console.Clear();
-                        OpenAnythingElseMenu();
+                        CloseInvestorMenu();
                     }
                     break;
                 case 4:
-                    var portfolio = investor.Portfolio.Coins;
-                    var balanceInEuro = investor.BalanceInEuros;
+                    var portfolio = currentInvestor.Portfolio.Coins;
+                    var balanceInEuro = currentInvestor.BalanceInEuros;
 
                     if (portfolio.Count == 0)
                     {
                         if (balanceInEuro == 0)
                         {
                             Console.WriteLine("O seu saldo em EUR é de 0 e você ainda não possui criptomoeda.");
-                            Console.WriteLine("\n");
-                            PressKeyToContinue();
-                            Console.Clear();
-                            OpenAnythingElseMenu();
+                            CloseInvestorMenu();
                         }
                         else
                         {
                             Console.WriteLine($"Seu saldo em EUR é de {balanceInEuro}, mas você ainda não possui criptomoeda.");
-                            Console.WriteLine("\n");
-                            PressKeyToContinue();
-                            Console.Clear();
-                            OpenAnythingElseMenu();
+                            CloseInvestorMenu();
                         }
                     }
                     else
@@ -350,13 +387,25 @@ namespace Program
                         Console.WriteLine("Estes são os seus ativos:");
                         (List<string> names1, List<decimal> prices2) = api.GetPrices();
 
-                        Console.WriteLine($"{balanceInEuro} EUR @ {balanceInEuro/100} | {balanceInEuro.ToString("0.##")} EUR");
+                        Console.WriteLine($"{balanceInEuro} EUR @ {balanceInEuro/100} | {balanceInEuro} EUR");
                         foreach (KeyValuePair<string, decimal> pair in portfolio)
                         {
-                            Console.WriteLine("Key: {0} Values: {1}", pair.Key, pair.Value);
                             var coinPrice = api.GetCoinPrice(pair.Key);
-                            Console.WriteLine($"{pair.Value} {pair.Key} @ {coinPrice} | {(pair.Value*coinPrice).ToString("0.##")} EUR");
+
+                            var maximumPairValue = portfolio.Values.Max();
+                            var maximumPairValueToString = Convert.ToString(maximumPairValue);
+                            var maximumPairValueLength = maximumPairValueToString.Length;
+
+                            string longestPairKey = portfolio.Keys.OrderByDescending(s => s.Length).First();
+                            int longestPairKeyLength = longestPairKey.Length;
+
+                            var total = pair.Value * coinPrice;
+                            var totalString = Convert.ToString(total);
+
+                            Console.WriteLine($"{Convert.ToString(pair.Value).PadRight(maximumPairValueLength,' ')} {pair.Key.PadRight(longestPairKeyLength,' ')} @ {(Convert.ToString(coinPrice)).PadRight(maximumPairValueLength,' ')} | {totalString.PadRight(maximumPairValueLength,' ')} EUR");
                         }
+
+                        CloseInvestorMenu();
                     }
                         break;
                 case 5:
@@ -370,11 +419,7 @@ namespace Program
                     {
                         Console.WriteLine($"{a.n.PadRight(longest.Length+5, ' ')}{a.p}");
                     }
-
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseInvestorMenu();
                     break;
                 case 6:
                     Console.Clear();
@@ -444,10 +489,7 @@ namespace Program
                             Console.WriteLine(coin);
                         }
                     }
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseAdminMenu();
                     break;
                 case 2:
                     Console.WriteLine("Você está prestes a remover uma moeda.");
@@ -493,17 +535,11 @@ namespace Program
                     {
                         Console.WriteLine(coin);
                     }
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseAdminMenu();
                     break;
                 case 3:
                     Console.WriteLine($"Até o momento, a TugaExchange registou um lucro de {api.Profit} EUR.");
-                    Console.WriteLine("\n");
-                    PressKeyToContinue();
-                    Console.Clear();
-                    OpenAnythingElseMenu();
+                    CloseAdminMenu();
                     break;
                 case 4:
                     Console.Clear();
@@ -512,6 +548,95 @@ namespace Program
                 case 5:
                     Console.Clear();
                     Console.WriteLine("Até a próxima!");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Is used at the end of every main operation in the Investor menu
+        /// </summary>
+        static void CloseInvestorMenu()
+        {
+            api.Save();
+            int menuChoice;
+            bool isValid;
+
+            do
+            {
+                Console.WriteLine("\n");
+                Console.WriteLine("O que você deseja fazer agora?");
+                Console.WriteLine("1 - Voltar para o menu Investidor");
+                Console.WriteLine("2 - Fechar a sessão atual e voltar para o menu principal");
+                Console.WriteLine("3 - Sair");
+                isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+                Console.Clear();
+
+                if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Por favor, escolha uma opção válida.");
+                }
+            }
+            while (menuChoice != 1 & menuChoice != 2 & menuChoice != 3);
+
+            switch (menuChoice)
+            {
+                case 1:
+                    Console.Clear();
+                    OpenInvestorMenu();
+                    break;
+                case 2:
+                    Console.Clear();
+                    currentInvestor = null;
+                    OpenMainMenu();
+                    break;
+                case 3:
+                    Console.Clear();
+                    Console.WriteLine("Até à próxima!");
+                    break;
+            }          
+        }
+
+        /// <summary>
+        /// Is used at the end of every main operation in the Admin menu
+        /// </summary>
+        static void CloseAdminMenu()
+        {
+            api.Save();
+            int menuChoice;
+            bool isValid;
+
+            do
+            {
+                Console.WriteLine("\n");
+                Console.WriteLine("O que você deseja fazer agora?");
+                Console.WriteLine("1 - Voltar para o menu Administrador");
+                Console.WriteLine("2 - Voltar para o menu principal");
+                Console.WriteLine("3 - Sair");
+                isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+                Console.Clear();
+
+                if (menuChoice != 1 & menuChoice != 2 & menuChoice != 3)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Por favor, escolha uma opção válida.");
+                }
+            }
+            while (menuChoice != 1 & menuChoice != 2 & menuChoice != 3);
+
+            switch (menuChoice)
+            {
+                case 1:
+                    Console.Clear();
+                    OpenAdminMenu();
+                    break;
+                case 2:
+                    Console.Clear();
+                    OpenMainMenu();
+                    break;
+                case 3:
+                    Console.Clear();
+                    Console.WriteLine("Até à próxima!");
                     break;
             }
         }
@@ -554,11 +679,7 @@ namespace Program
 
         static void Main()
         {
-            ///<summary>Creates a new API object and attributes it to Program's api property.</summary>
-            var api = new API();
-            Program.api = api; // Could have done api = new API(); as below?
-
-            investor = api.AddInvestor();
+            
 
             ///<summary>Reads previously saved data.</summary>
             api.Read();

@@ -81,7 +81,7 @@ namespace ClassLibraryTest
             var coins = api.GetCoins();
             var coin = coins[0];
             Assert.True(coin.MarketValue == 1);
-            //api.UpdatePrices(200);
+            api.UpdatePrices();
             Assert.True(coin.MarketValue != 1);
         }
 
