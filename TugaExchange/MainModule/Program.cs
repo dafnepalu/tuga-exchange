@@ -244,7 +244,7 @@ namespace Program
                     break;
                 case 3:
                     var dictionary = investor.Portfolio.Coins;
-                    dictionary.Add("Moeda1", 3);
+                    //dictionary.Add("Moeda1", 3);
                     if (dictionary.Count == 0)
                     {
                         Console.WriteLine("Você ainda não possui criptomoeda.");
@@ -329,17 +329,23 @@ namespace Program
                     break;
                 case 4:
                     Console.WriteLine($"Mostrando o seu portfolio:");
+                    var portfolio = investor.Portfolio.Coins;
+                    var balanceInEuro = investor.BalanceInEuros;
+
+                    Console.WriteLine("{0, 10} EUR \t @", balanceInEuro);
                     break;
                 case 5:
-                    Console.WriteLine($"Este é o registo do último câmbio, atualizado às {DateTime.Now}:");
+                    Console.WriteLine($"Este é o registo do último câmbio, atualizado em {DateTime.Now}:");
                     // api.UpdatePrices();
                     (List<string> names, List<decimal> prices) = api.GetPrices();
                     string longest = names.OrderByDescending(s => s.Length).First();
-                    int longestCharacters = longest.Length;
+
+                    // Show both lists' contents in the same line and align them.
                     foreach (var a in names.Zip(prices, (n, p) => new { n, p }))
                     {
-                        Console.WriteLine($"{a.n}\t{a.p, 10}");
+                        Console.WriteLine($"{a.n.PadRight(longest.Length+5, ' ')}{a.p}");
                     }
+
                     Console.WriteLine("\n");
                     PressKeyToContinue();
                     Console.Clear();
