@@ -7,6 +7,8 @@ namespace Program
     {
         static API api = new API();
 
+        static Investor investor;
+
         static void ShowWelcomeBanner()
         {
             string welcomeText = "TugaExchange - Cripto com confiança";
@@ -36,48 +38,40 @@ namespace Program
 
         static void OpenMainMenu()
         {
-            char menuChoice;
+            int menuChoice;
             bool isValid;
 
             do
             {
                 Console.WriteLine("Selecione uma opção para entrar:");
                 Console.WriteLine("\n");
-                Console.WriteLine("A - Sou investidor/a");
-                Console.WriteLine("B - Sou administrador/a");
+                Console.WriteLine("1 - Sou investidor/a");
+                Console.WriteLine("2 - Sou administrador/a");
                 Console.WriteLine("\n");
 
-                isValid = char.TryParse(Console.ReadLine(), out menuChoice);
+                isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
 
 
-                if (menuChoice != 'a' & menuChoice != 'A' & menuChoice != 'b' & menuChoice != 'B')
+                if (menuChoice != 1 & menuChoice != 2)
                 {
                     Console.Clear();
                     Console.WriteLine("Tem certeza de que inseriu uma opção válida?");
                 }
                 else
                 {
-                    string menuChoiceStr = menuChoice.ToString();
-                    string menuChoiceStrUpper = menuChoiceStr.ToUpper();
-                    Console.WriteLine($"Você escolheu a opção {menuChoiceStrUpper}.");
+                    Console.WriteLine($"Você escolheu a opção {menuChoice}.");
                 }
             }
-            while (menuChoice != 'a' & menuChoice != 'A' & menuChoice != 'b' & menuChoice != 'B');
+            while (menuChoice != 1 & menuChoice != 2);
 
             Console.Clear();
 
             switch (menuChoice)
             {
-                case 'A':
+                case 1:
                     OpenInvestorMenu();
                     break;
-                case 'a':
-                    OpenInvestorMenu();
-                    break;
-                case 'B':
-                    OpenAdminMenu();
-                    break;
-                case 'b':
+                case 2:
                     OpenAdminMenu();
                     break;
             }
@@ -87,7 +81,8 @@ namespace Program
         {
             int menuChoice;
             bool isValid;
-            var investor = api.AddInvestor();
+            //var investor = api.AddInvestor();
+            //Program.investor = investor;
 
             Console.WriteLine($"Bem-vindo/a, investidor/a #{investor.Id}.");
 
@@ -480,6 +475,12 @@ namespace Program
                                 Console.WriteLine("Por favor, introduza um número da lista.");
                                 isValid = false;
                             }
+                            else if (menuChoice <= 0)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                                isValid = false;
+                            }
                         }
                     }
                     while (!isValid);
@@ -555,7 +556,9 @@ namespace Program
         {
             ///<summary>Creates a new API object and attributes it to Program's api property.</summary>
             var api = new API();
-            Program.api = api;
+            Program.api = api; // Could have done api = new API(); as below?
+
+            investor = api.AddInvestor();
 
             ///<summary>Reads previously saved data.</summary>
             api.Read();
