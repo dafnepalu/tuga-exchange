@@ -1,4 +1,5 @@
 ﻿using ClassLibrary;
+using System.Linq;
 
 namespace Program
 {
@@ -235,7 +236,7 @@ namespace Program
                         PressKeyToContinue();
                     }
                     Console.Clear();
-                    Console.WriteLine($"{quantity} unidade/s da criptomoeda {coinToPurchase} foi/foram adicionada/s ao seu portfolio.");
+                    Console.WriteLine($"Você comprou {quantity} unidade/s da criptomoeda {coinToPurchase}.");
                     Console.WriteLine("\n");
                     PressKeyToContinue();
                     Console.Clear();
@@ -243,48 +244,105 @@ namespace Program
                     break;
                 case 3:
                     var dictionary = investor.Portfolio.Coins;
-                    Console.WriteLine("Você está prestes a vender criptomoeda.");
-                    do
+                    dictionary.Add("Moeda1", 3);
+                    if (dictionary.Count == 0)
                     {
-                        Console.WriteLine("Selecione a moeda que deseja vender:");
-                        for (int i = 0; i < dictionary.Count; i++)
-                        {
-                            Console.WriteLine($"{i + 1} - {dictionary.Values}");
-                        }
-
+                        Console.WriteLine("Você ainda não possui criptomoeda.");
                         Console.WriteLine("\n");
-                        isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
-
-                        if (!isValid)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Por favor, introduza um número da lista.");
-                        }
-                        else
-                        {
-                            if (menuChoice > dictionary.Count)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Por favor, introduza um número da lista.");
-                                isValid = false;
-                            }
-                            if (menuChoice <= 0)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Por favor, introduza um número da lista.");
-                                isValid = false;
-                            }
-                        }
+                        PressKeyToContinue();
+                        Console.Clear();
+                        OpenAnythingElseMenu();
                     }
-                    while (!isValid);                   
+                    else
+                    {
+                        Console.WriteLine("Você está prestes a vender criptomoeda.");
+                        do
+                        {
+                            Console.WriteLine("Selecione a moeda que deseja vender:");
+
+                            for (int i = 0; i < dictionary.Count; i++)
+                            {
+                                var element1 = dictionary.ElementAt(i);
+                                var key = element1.Key;
+                                Console.WriteLine($"{i + 1} - {key}");
+                            }
+
+                            Console.WriteLine("\n");
+                            isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+
+                            if (!isValid)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número da lista.");
+                            }
+                            else
+                            {
+                                if (menuChoice > dictionary.Count)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("Por favor, introduza um número da lista.");
+                                    isValid = false;
+                                }
+                                if (menuChoice <= 0)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("Por favor, introduza um número da lista.");
+                                    isValid = false;
+                                }
+                            }
+                        }
+                        while (!isValid);
+                        var element = dictionary.ElementAt(menuChoice-1);
+                        var coinToSell = element.Key;
+                        Console.WriteLine(coinToSell);
+                        Console.Clear();
+
+                        do
+                        {
+                            Console.WriteLine("Quantas moedas deseja vender?");
+                            isValid = Decimal.TryParse(Console.ReadLine(), out quantity);
+
+                            if (!isValid)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Por favor, introduza um número inteiro (1, 2...) ou decimal (1,5, 3,5...).");
+                            }
+                            else
+                            {
+                                if (quantity <= 0)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("Por favor, introduza um número maior do que zero.");
+                                    isValid = false;
+                                }
+                            }
+                        }
+                        while (!isValid);
+                        api.SellCurrency(investor.Id, coinToSell, quantity);
+                        Console.Clear();
+                        Console.WriteLine($"Você vendeu {quantity} unidade/s da criptomoeda {coinToSell}.");
+                        Console.WriteLine("\n");
+                        PressKeyToContinue();
+                        Console.Clear();
+                        OpenAnythingElseMenu();
+                    }                 
                     break;
                 case 4:
-                    Console.WriteLine("Você selecionou a opção 4.");
+                    Console.WriteLine($"Mostrando o seu portfolio:");
                     break;
                 case 5:
-                    Console.WriteLine("Mostrando o câmbio:");
-                    //var api = new API();
-                    //api.ShowRates();
+                    Console.WriteLine($"Este é o registo do último câmbio, atualizado às {DateTime.Now}:");
+                    // api.UpdatePrices();
+                    (List<string> names, List<decimal> prices) = api.GetPrices();
+                    string longest = names.OrderByDescending(s => s.Length).First();
+                    int longestCharacters = longest.Length;
+                    foreach (var a in names.Zip(prices, (n, p) => new { n, p }))
+                    {
+                        Console.WriteLine($"{a.n}\t{a.p, 10}");
+                    }
+                    Console.WriteLine("\n");
+                    PressKeyToContinue();
+                    Console.Clear();
                     OpenAnythingElseMenu();
                     break;
                 case 6:
@@ -438,6 +496,7 @@ namespace Program
 
                 if (menuChoice != 1 & menuChoice != 2)
                 {
+                    Console.Clear();
                     Console.WriteLine("Por favor, escolha uma opção válida.");
                 }
             }
@@ -450,6 +509,7 @@ namespace Program
                     OpenMainMenu();
                     break;
                 case 2:
+                    Console.Clear();
                     Console.WriteLine("Até à próxima!");
                     break;
             }
