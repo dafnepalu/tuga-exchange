@@ -3,6 +3,7 @@
 public class Portfolio
 {
     public Dictionary<string, decimal> Coins { get; set; } = new Dictionary<string, decimal>();
+
     public void AddCoinToPortfolio(string name, decimal quantity)
     {
         if (quantity <= 0)

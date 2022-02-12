@@ -81,6 +81,21 @@ public class API
         return coin;
     }
 
+    /// <summary>
+    /// Finds the price of a specific Coin in the system.
+    /// </summary>
+    /// <param name="name">The name of the coin whose price we want to retrieve.</param>
+    /// <returns>The Coin's market value in decimal format.</returns>
+    public decimal GetCoinPrice(string name)
+    {
+        var coin = Coins.Find(coin => coin.Name == name);
+        if (coin == null)
+        {
+            throw new CoinNotFoundException("Esta criptomoeda não se encontra no seu portfolio.");
+        }
+        return coin.MarketValue;
+    }
+
     public Investor GetInvestor(int investorID)
     {
         var investor = Investors.Find(investor => investor.Id == investorID);

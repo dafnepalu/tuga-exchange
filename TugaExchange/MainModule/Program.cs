@@ -292,7 +292,7 @@ namespace Program
                             }
                         }
                         while (!isValid);
-                        var element = dictionary.ElementAt(menuChoice-1);
+                        var element = dictionary.ElementAt(menuChoice - 1);
                         var coinToSell = element.Key;
                         Console.WriteLine(coinToSell);
                         Console.Clear();
@@ -325,15 +325,45 @@ namespace Program
                         PressKeyToContinue();
                         Console.Clear();
                         OpenAnythingElseMenu();
-                    }                 
+                    }
                     break;
                 case 4:
-                    Console.WriteLine($"Mostrando o seu portfolio:");
                     var portfolio = investor.Portfolio.Coins;
                     var balanceInEuro = investor.BalanceInEuros;
 
-                    Console.WriteLine("{0, 10} EUR \t @", balanceInEuro);
-                    break;
+                    if (portfolio.Count == 0)
+                    {
+                        if (balanceInEuro == 0)
+                        {
+                            Console.WriteLine("O seu saldo em EUR é de 0 e você ainda não possui criptomoeda.");
+                            Console.WriteLine("\n");
+                            PressKeyToContinue();
+                            Console.Clear();
+                            OpenAnythingElseMenu();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Seu saldo em EUR é de {balanceInEuro}, mas você ainda não possui criptomoeda.");
+                            Console.WriteLine("\n");
+                            PressKeyToContinue();
+                            Console.Clear();
+                            OpenAnythingElseMenu();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Estes são os seus ativos:");
+                        (List<string> names1, List<decimal> prices2) = api.GetPrices();
+
+                        Console.WriteLine($"{balanceInEuro} EUR @ {balanceInEuro/100} | {balanceInEuro.ToString("0.##")} EUR");
+                        foreach (KeyValuePair<string, decimal> pair in portfolio)
+                        {
+                            Console.WriteLine("Key: {0} Values: {1}", pair.Key, pair.Value);
+                            var coinPrice = api.GetCoinPrice(pair.Key);
+                            Console.WriteLine($"{pair.Value} {pair.Key} @ {coinPrice} | {(pair.Value*coinPrice).ToString("0.##")} EUR");
+                        }
+                    }
+                        break;
                 case 5:
                     Console.WriteLine($"Este é o registo do último câmbio, atualizado em {DateTime.Now}:");
                     // api.UpdatePrices();
