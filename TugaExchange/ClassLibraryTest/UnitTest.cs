@@ -147,5 +147,12 @@ namespace ClassLibraryTest
             api.AddCoin("Moeda123");
 
         }
+        [Fact]
+        public void Whatever()
+        {
+            var api = new API();
+            api.UpdatePrices();
+        }
     }
+
 }

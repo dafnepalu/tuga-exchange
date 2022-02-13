@@ -24,7 +24,8 @@ namespace ClassLibrary;
 ///     6. GetCoinPrice
 /// II. INVESTOR METHODS
 ///     1. AddInvestor
-///     2. GetInvestor
+///     2. RemoveInvestor
+///     3. GetInvestor
 /// III. PRICE METHODS
 ///     1. GetPrices
 ///     2. DefinePriceUpdateInSeconds
@@ -47,11 +48,11 @@ public class API
     public List<Coin> Coins { get; set; } = new List<Coin>();
     public List<Investor> Investors { get; set; } = new List<Investor>();
     public decimal Profit { get; set; }
-    public int PriceUpdateInSeconds { get; set; } = 30; // Personal choice to get things started.
+    public int PriceUpdateInSeconds { get; set; }
     private static readonly Random Random = new Random();
-    public int LastInvestorID { get; set; }
+    public int LastInvestorID { get; set; } = 1;
     public decimal TransactionFee { get; set; } = new decimal(0.01);
-    public DateTime? LastTimeUpdatePricesWasCalled { get; set; }
+    public DateTime LastTimeUpdatePricesWasCalled { get; set; }
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +158,19 @@ public class API
         return investor;
     }
 
+    public void RemoveInvestor(int investorId)
+    {
+        for (int i = 0; i < Investors.Count; i++)
+        {
+            Investor investor = Investors[i];
+            if (investor.Id == investorId)
+            {
+                int index = i;
+                Investors.RemoveAt(index);
+            }
+        }
+    }
+
     /// <summary>
     /// Retrieves an investor based on its ID.
     /// </summary>
@@ -220,12 +234,17 @@ public class API
         const double minimum = -0.5 / 100;
         const double maximum = 0.5 / 100;
 
-        if (!LastTimeUpdatePricesWasCalled.HasValue)
+        if (PriceUpdateInSeconds < 1)
+        {
+            DefinePriceUpdateInSeconds(30); // Default choice, just in case.
+        }
+
+        if (LastTimeUpdatePricesWasCalled == default(DateTime))
         {
             LastTimeUpdatePricesWasCalled = DateTime.Now;
         }
 
-        double timeSpanInSeconds = (DateTime.Now - LastTimeUpdatePricesWasCalled).Value.TotalSeconds;
+        double timeSpanInSeconds = DateTime.Now.Subtract(LastTimeUpdatePricesWasCalled).TotalSeconds;
 
         var times = Math.Floor(timeSpanInSeconds / PriceUpdateInSeconds); // Rounds down everytime because...
 
@@ -261,6 +280,8 @@ public class API
     /// <param name="quantity">The number of coins to be purchased.</param>
     public void BuyCurrency(int investorID, string name, decimal quantity)
     {
+        GetPrices();
+        Save();
         var coin = GetCoin(name);
         var subtotal = coin.MarketValue * quantity;
         var fee = subtotal * TransactionFee;
@@ -285,6 +306,8 @@ public class API
     /// <param name="quantity">The number of coins they want to sell.</param>
     public void SellCurrency(int investorID, string name, decimal quantity)
     {
+        GetPrices();
+        Save();
         var coin = GetCoin(name);
         var subtotal = coin.MarketValue * quantity;
         var fee = subtotal * TransactionFee;

@@ -5,9 +5,17 @@ namespace Program
 {
     public class Program
     {
+        ////////////////////////////////////////////////////////////////////////////////
+        /// CLASS PROPERTIES
+        ////////////////////////////////////////////////////////////////////////////////
+
         static API api = new API();
 
         static Investor? currentInvestor;
+
+        ////////////////////////////////////////////////////////////////////////////////
+        /// CLASS METHODS
+        ////////////////////////////////////////////////////////////////////////////////
 
         static void ShowWelcomeBanner()
         {
@@ -40,6 +48,8 @@ namespace Program
         static void OpenMainMenu()
         {
             int menuChoice;
+            int menuChoice2;
+            int menuChoice3;
             bool isValid;
 
             do
@@ -69,59 +79,93 @@ namespace Program
 
             switch (menuChoice)
             {
-                case 1:
-                    if (api.Investors == null)
+                case 1: // Investor menu
+                    if (api.Investors.Count == 0)
                     {
                         currentInvestor = api.AddInvestor();
-                        Console.WriteLine($"Bem-vindo/a, investidor/a #{currentInvestor.Id}.");
+                        Console.WriteLine($"O seu ID de investidor é #{currentInvestor.Id}.");
                         OpenInvestorMenu();
                     }
                     else
                     {
                         do
                         {
-                            Console.WriteLine("Qual é o seu ID de investidor?");
-                            isValid = Int32.TryParse(Console.ReadLine(), out menuChoice);
+                            Console.WriteLine("Você já tem um ID de investidor?");
+                            Console.WriteLine("1 - Sim");
+                            Console.WriteLine("2 - Não");
+                            isValid = Int32.TryParse(Console.ReadLine(), out menuChoice2);
 
-                            if (!isValid)
+                            if (menuChoice2 != 1 & menuChoice2 != 2)
                             {
                                 Console.Clear();
-                                Console.WriteLine("Por favor, insira um número.");
+                                Console.WriteLine("Por favor, insira uma opção válida");
+                            }
+                        }
+                        while (menuChoice2 != 1 & menuChoice2 != 2);
+
+                        Console.Clear();
+
+                        if (menuChoice2 == 1)
+                        {
+                            do
+                            {
+                                Console.WriteLine("Qual é o seu ID de investidor?");
+                                isValid = Int32.TryParse(Console.ReadLine(), out menuChoice3);
+
+                                if (!isValid)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine("Por favor, insira um número.");
+                                }
+
+                                else
+                                {
+                                    if (menuChoice3 < 0)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("Por favor, insira um número igual ou maior do que zero.");
+                                        isValid = false;
+                                    }
+                                    else if (menuChoice3 > api.Investors.Count)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine("O ID está incorreto. Por favor, tente novamente.");
+                                        isValid = false;
+                                    }
+                                }
+                            }
+                            while (!isValid);
+
+                            try
+                            {
+                                currentInvestor = api.GetInvestor(menuChoice);
+                            }
+                            catch (InvestorNotFoundException e)
+                            {
+                                Console.Clear();
+                                Console.WriteLine($"{e.Message}");
+                            }
+                            if (currentInvestor != null)
+                            {
+                                Console.Clear();
+                                Console.WriteLine($"Bem-vindo/a, investidor/a #{currentInvestor.Id}.");
+                                OpenInvestorMenu();
                             }
                             else
                             {
-                                if (menuChoice < 0)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine("Por favor, insira um número igual ou maior do que zero.");
-                                    isValid = false;
-                                }
-                                else if (menuChoice > api.Investors.Count)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine("O ID está incorreto. Por favor, tente novamente.");
-                                    isValid = false;
-                                }
+                                OpenMainMenu();
                             }
                         }
-                        while (!isValid);
-
-                        try
+                        else
                         {
-                            currentInvestor = api.GetInvestor(menuChoice);
+                            currentInvestor = api.AddInvestor();
+                            Console.WriteLine($"O seu ID de investidor é #{currentInvestor.Id}.");
+                            OpenInvestorMenu();
                         }
-                        catch (InvestorNotFoundException e)
-                        {
-                            Console.Clear();
-                            Console.WriteLine($"{e.Message}");
-                            PressKeyToContinue();
-                        }
-                        Console.Clear();
-                        Console.WriteLine($"Bem-vindo/a, investidor/a #{currentInvestor.Id}.");
-                        OpenInvestorMenu();
                     }
                     break;
-                case 2:
+                case 2: // Admin menu
+                    Console.Clear();
                     OpenAdminMenu();
                     break;
             }
@@ -279,7 +323,6 @@ namespace Program
                     break;
                 case 3:
                     var dictionary = currentInvestor.Portfolio.Coins;
-                    //dictionary.Add("Moeda1", 3);
                     if (dictionary.Count == 0)
                     {
                         Console.WriteLine("Você ainda não possui criptomoeda.");
@@ -385,12 +428,24 @@ namespace Program
                     else
                     {
                         Console.WriteLine("Estes são os seus ativos:");
+
                         (List<string> names1, List<decimal> prices2) = api.GetPrices();
 
-                        Console.WriteLine($"{balanceInEuro} EUR @ {balanceInEuro/100} | {balanceInEuro} EUR");
+                        string balanceInEuroStr = Convert.ToString(balanceInEuro);
+                        int balanceInEuroLength = balanceInEuroStr.Length;
+
+                        Console.WriteLine($"{balanceInEuroStr.PadRight(10, ' ')} EUR @ 1,00 {balanceInEuroStr.PadLeft(10, ' ')} EUR");
+
+
                         foreach (KeyValuePair<string, decimal> pair in portfolio)
                         {
+                            string pairValueStr = Convert.ToString(pair.Value);
+                            int pairValueLength = pairValueStr.Length;
+                            int firstColumnPadding = (balanceInEuroLength - pairValueLength) + 5;
+
                             var coinPrice = api.GetCoinPrice(pair.Key);
+                            var coinPriceStr = coinPrice.ToString("0.00");
+
 
                             var maximumPairValue = portfolio.Values.Max();
                             var maximumPairValueToString = Convert.ToString(maximumPairValue);
@@ -400,14 +455,14 @@ namespace Program
                             int longestPairKeyLength = longestPairKey.Length;
 
                             var total = pair.Value * coinPrice;
-                            var totalString = Convert.ToString(total);
+                            var totalString = total.ToString("0.00");
 
-                            Console.WriteLine($"{Convert.ToString(pair.Value).PadRight(maximumPairValueLength,' ')} {pair.Key.PadRight(longestPairKeyLength,' ')} @ {(Convert.ToString(coinPrice)).PadRight(maximumPairValueLength,' ')} | {totalString.PadRight(maximumPairValueLength,' ')} EUR");
+                            Console.WriteLine($"{pairValueStr.PadRight(firstColumnPadding, ' ')} {pair.Key.PadRight(longestPairKeyLength, ' ')} @ {coinPriceStr} {totalString.PadRight(maximumPairValueLength, ' ')} EUR");
                         }
 
                         CloseInvestorMenu();
                     }
-                        break;
+                    break;
                 case 5:
                     Console.WriteLine($"Este é o registo do último câmbio, atualizado em {DateTime.Now}:");
                     // api.UpdatePrices();
@@ -417,7 +472,7 @@ namespace Program
                     // Show both lists' contents in the same line and align them.
                     foreach (var a in names.Zip(prices, (n, p) => new { n, p }))
                     {
-                        Console.WriteLine($"{a.n.PadRight(longest.Length+5, ' ')}{a.p}");
+                        Console.WriteLine($"{a.n.PadRight(longest.Length + 5, ' ')}{a.p}");
                     }
                     CloseInvestorMenu();
                     break;
@@ -594,7 +649,7 @@ namespace Program
                     Console.Clear();
                     Console.WriteLine("Até à próxima!");
                     break;
-            }          
+            }
         }
 
         /// <summary>
@@ -677,10 +732,12 @@ namespace Program
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        /// MAIN PROGRAM
+        ////////////////////////////////////////////////////////////////////////////////
+
         static void Main()
         {
-            
-
             ///<summary>Reads previously saved data.</summary>
             api.Read();
 
@@ -691,6 +748,6 @@ namespace Program
             ///<summary>Saves this session's data.</summary>
             api.Save();
         }
-
     }
 }
+
