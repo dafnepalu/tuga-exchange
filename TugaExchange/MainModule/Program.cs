@@ -138,7 +138,7 @@ namespace Program
 
                             try
                             {
-                                currentInvestor = api.GetInvestor(menuChoice);
+                                currentInvestor = api.GetInvestor(menuChoice3);
                             }
                             catch (InvestorNotFoundException e)
                             {
@@ -429,35 +429,38 @@ namespace Program
                     {
                         Console.WriteLine("Estes são os seus ativos:");
 
+                        string eur = "EUR";
+                        string atSign = "@";
+                        string eurValue = "1,00";
+                        string pipe = "|";
+
                         (List<string> names1, List<decimal> prices2) = api.GetPrices();
 
-                        string balanceInEuroStr = Convert.ToString(balanceInEuro);
+                        string balanceInEuroStr = balanceInEuro.ToString("0.00");
                         int balanceInEuroLength = balanceInEuroStr.Length;
+                        Console.WriteLine("Seu saldo em EUR:");
+                        Console.WriteLine($"{balanceInEuroStr.PadRight(10, ' ')} {eur.PadLeft(15,' ')} {atSign.PadLeft(5,' ')} {eurValue.PadLeft(5, ' ')} {pipe.PadLeft(5,' ')} {balanceInEuroStr.PadLeft(5, ' ')} {eur}");
 
-                        Console.WriteLine($"{balanceInEuroStr.PadRight(10, ' ')} EUR @ 1,00 {balanceInEuroStr.PadLeft(10, ' ')} EUR");
-
+                        for (int i = 0; i < 10; i++)
+                        {
+                            Console.Write("-");
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine("Suas criptomoedas:");
 
                         foreach (KeyValuePair<string, decimal> pair in portfolio)
                         {
                             string pairValueStr = Convert.ToString(pair.Value);
                             int pairValueLength = pairValueStr.Length;
-                            int firstColumnPadding = (balanceInEuroLength - pairValueLength) + 5;
+                            int firstColumnPadding = (balanceInEuroLength - pairValueLength) + 6;
 
                             var coinPrice = api.GetCoinPrice(pair.Key);
                             var coinPriceStr = coinPrice.ToString("0.00");
 
-
-                            var maximumPairValue = portfolio.Values.Max();
-                            var maximumPairValueToString = Convert.ToString(maximumPairValue);
-                            var maximumPairValueLength = maximumPairValueToString.Length;
-
-                            string longestPairKey = portfolio.Keys.OrderByDescending(s => s.Length).First();
-                            int longestPairKeyLength = longestPairKey.Length;
-
                             var total = pair.Value * coinPrice;
                             var totalString = total.ToString("0.00");
 
-                            Console.WriteLine($"{pairValueStr.PadRight(firstColumnPadding, ' ')} {pair.Key.PadRight(longestPairKeyLength, ' ')} @ {coinPriceStr} {totalString.PadRight(maximumPairValueLength, ' ')} EUR");
+                            Console.WriteLine($"{pairValueStr.PadRight(firstColumnPadding, ' ')} {pair.Key.PadLeft(15, ' ')} {atSign.PadLeft(5,' ')} {coinPriceStr.PadLeft(5, ' ')} {pipe.PadLeft(5,' ')} {totalString.PadLeft(5, ' ')} EUR");
                         }
 
                         CloseInvestorMenu();
@@ -465,14 +468,14 @@ namespace Program
                     break;
                 case 5:
                     Console.WriteLine($"Este é o registo do último câmbio, atualizado em {DateTime.Now}:");
-                    // api.UpdatePrices();
+
                     (List<string> names, List<decimal> prices) = api.GetPrices();
                     string longest = names.OrderByDescending(s => s.Length).First();
 
                     // Show both lists' contents in the same line and align them.
                     foreach (var a in names.Zip(prices, (n, p) => new { n, p }))
                     {
-                        Console.WriteLine($"{a.n.PadRight(longest.Length + 5, ' ')}{a.p}");
+                        Console.WriteLine($"{a.n.PadRight(longest.Length + 5, ' ')}{a.p.ToString("0.00")}");
                     }
                     CloseInvestorMenu();
                     break;
@@ -593,7 +596,7 @@ namespace Program
                     CloseAdminMenu();
                     break;
                 case 3:
-                    Console.WriteLine($"Até o momento, a TugaExchange registou um lucro de {api.Profit} EUR.");
+                    Console.WriteLine($"Até o momento, a TugaExchange registou um lucro de {(api.Profit).ToString("0.00")} EUR.");
                     CloseAdminMenu();
                     break;
                 case 4:
@@ -736,9 +739,21 @@ namespace Program
         /// MAIN PROGRAM
         ////////////////////////////////////////////////////////////////////////////////
 
-        static void Main()
+        // NB: I haven't had the time to look into why the Console doesn't show a different Id for each Investor
+        // object I ask it to create (and it does seem to create them when I ask it to. You can run a foreach
+        // loop to see it for yourself:
+
+
+            //foreach (Investor investor in api.Investors)
+            //{
+            //    Console.WriteLine(investor.Id);
+            //}
+
+
+    static void Main()
         {
             ///<summary>Reads previously saved data.</summary>
+
             api.Read();
 
             ShowWelcomeBanner();

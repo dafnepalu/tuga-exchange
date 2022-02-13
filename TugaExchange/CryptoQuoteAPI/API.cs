@@ -50,7 +50,7 @@ public class API
     public decimal Profit { get; set; }
     public int PriceUpdateInSeconds { get; set; }
     private static readonly Random Random = new Random();
-    public int LastInvestorID { get; set; } = 1;
+    public int LastInvestorID { get; set; }
     public decimal TransactionFee { get; set; } = new decimal(0.01);
     public DateTime LastTimeUpdatePricesWasCalled { get; set; }
 
