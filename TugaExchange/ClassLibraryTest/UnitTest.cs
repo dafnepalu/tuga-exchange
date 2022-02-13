@@ -56,10 +56,16 @@ namespace ClassLibraryTest
         public void DefinePriceUpdateInSeconds()
         {
             var api = new API();
+            Assert.Equal(0,api.PriceUpdateInSeconds);
+
             api.DefinePriceUpdateInSeconds(30);
-            Assert.Equal(30, api.PriceUpdateInSeconds);
-            api.DefinePriceUpdateInSeconds(60);
-            Assert.NotEqual(30, api.PriceUpdateInSeconds);
+            Assert.Equal(30,api.PriceUpdateInSeconds);
+
+
+            //api.DefinePriceUpdateInSeconds(30);
+            //Assert.Equal(30, api.PriceUpdateInSeconds);
+            //api.DefinePriceUpdateInSeconds(60);
+            //Assert.NotEqual(30, api.PriceUpdateInSeconds);
         }
 
         [Fact]
@@ -125,17 +131,21 @@ namespace ClassLibraryTest
             Assert.NotEqual(0, api.Profit);
         }
         [Fact]
-        public void Json2()
+        public void UpdatePrices2()
         {
             var api = new API();
-            api.AddCoin("coinhehe");
+            api.AddCoin("Moeda123");
+            var priceMoeda123 = api.GetCoinPrice("Moeda123");
+            Assert.Equal(1, priceMoeda123);
+            Assert.Null(api.LastTimeUpdatePricesWasCalled);
             api.UpdatePrices();
-            DateTime firstTime = api.LastTimeUpdatePricesWasCalled;
-            api.Save();
-            TimeSpan ts = new TimeSpan(0, 2, 0);
-            Thread.Sleep(ts);
+
+            Thread.Sleep(120000);
+
             api.UpdatePrices();
-            Assert.NotEqual(firstTime, api.LastTimeUpdatePricesWasCalled);
+
+            api.AddCoin("Moeda123");
+
         }
     }
 }

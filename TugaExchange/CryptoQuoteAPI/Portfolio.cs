@@ -10,19 +10,19 @@ public class Portfolio
         {
             throw new QuantityIsSmallerThanZeroException();
         }
-        if (Coins.ContainsKey(name)) // je vérifie que la clé existe
+        if (Coins.ContainsKey(name)) // We need to check if the Key exists
         {
-            Coins[name] += quantity; // je modifie directement la valeur grâce à la clé name
+            Coins[name] += quantity; // We change the Value thanks to the Key
         }
         else
         {
-            Coins.Add(name, quantity); // je rajoute la valeur à la clé name
+            Coins.Add(name, quantity); // We add the Value to the Key
         }
     }
 
     public void RemoveCoinFromPortfolio(string name, decimal quantity)
     {
-        if (!Coins.ContainsKey(name)) // je vérifie que la clé existe sinon erreur
+        if (!Coins.ContainsKey(name)) // If the Key doesn't exist, there's an error
         {
             throw new CoinNotFoundInPortfolioException();
         }
@@ -30,11 +30,11 @@ public class Portfolio
         {
             throw new QuantityIsSmallerThanZeroException();
         }
-        var value = Coins[name]; // j'accède à la valeur grâce à la clé name
+        var value = Coins[name]; // I can get the Value thanks to the Key
         if (value < quantity)
         {
             throw new InsufficientCoinsException($"Você não possui uma quantidade suficiente desta criptomoeda.");
         }
-        Coins[name] -= quantity; // je modifie la valeur grâce à la clé name
+        Coins[name] -= quantity; // We change the Value thanks to the Key
     }
 }
