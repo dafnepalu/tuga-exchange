@@ -739,18 +739,7 @@ namespace Program
         /// MAIN PROGRAM
         ////////////////////////////////////////////////////////////////////////////////
 
-        // NB: I haven't had the time to look into why the Console doesn't show a different Id for each Investor
-        // object I ask it to create (and it does seem to create them when I ask it to. You can run a foreach
-        // loop to see it for yourself:
-
-
-            //foreach (Investor investor in api.Investors)
-            //{
-            //    Console.WriteLine(investor.Id);
-            //}
-
-
-    static void Main()
+        static void Main()
         {
             ///<summary>Reads previously saved data.</summary>
 

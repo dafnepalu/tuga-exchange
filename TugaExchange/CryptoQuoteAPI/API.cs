@@ -152,6 +152,10 @@ public class API
     public Investor AddInvestor()
     {
         Investor investor = new Investor();
+        if (LastInvestorID == 0)
+        {
+            LastInvestorID = 1;
+        }
         investor.Id = LastInvestorID;
         LastInvestorID += 1;
         Investors.Add(investor);
